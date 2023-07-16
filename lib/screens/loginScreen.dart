@@ -42,18 +42,6 @@ class _LoginScreenState extends State<LoginScreen> {
       if (data['statusCode'].toString() != "200") {
         print('Login failed: ${response.body}');
         // Show error message
-        _showErrorMessage('Login failed');
-        return;
-      }
-    }
-
-    if (response.statusCode == 200) {
-      // Login successful
-      // Extract the bearer token from the response
-      final data = json.decode(response.body);
-      if (data['statusCode'].toString() == "401") {
-        print('Login failed: ${response.body}');
-        // Show error message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Login Failed.'),
@@ -69,6 +57,13 @@ class _LoginScreenState extends State<LoginScreen> {
         );
         return;
       }
+    }
+
+    if (response.statusCode == 200) {
+      // Login successful
+      // Extract the bearer token from the response
+      final data = json.decode(response.body);
+
       var token = data['access_token'];
 
       // Print the token
