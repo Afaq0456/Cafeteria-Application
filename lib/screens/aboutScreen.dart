@@ -2,9 +2,61 @@ import 'package:flutter/material.dart';
 import 'package:freshman.cafe/const/colors.dart';
 import 'package:freshman.cafe/utils/helper.dart';
 import 'package:freshman.cafe/widgets/customNavBar.dart';
+import 'dart:convert';
+import 'package:freshman.cafe/const/severaddress.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
-class AboutScreen extends StatelessWidget {
+class AboutScreen extends StatefulWidget {
   static const routeName = "/aboutScreen";
+
+  const AboutScreen({Key key}) : super(key: key);
+
+  @override
+  State<AboutScreen> createState() => _AboutScreenState();
+}
+
+class _AboutScreenState extends State<AboutScreen> {
+  Map<String, dynamic> about = {};
+  Future<void> About() async {
+    // Get the bearer token from shared preferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('action');
+    String baseurl = BaseUrl().baseUrl;
+
+    String apiUrl = '$baseurl/api/about_us';
+
+    try {
+      var response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // If the server returns a 200 OK response, parse the response data
+        final responseData = json.decode(response.body);
+        setState(() {
+          about = responseData;
+        });
+      } else {
+        // If the server did not return a 200 OK response, handle the error
+        print('Failed to fetch data: ${response.statusCode}');
+        return null;
+      }
+    } catch (error) {
+      // Handle other exceptions if any
+      print('Error: $error');
+      return null;
+    }
+  }
+
+  @override
+  void initState() {
+    About();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,29 +92,40 @@ class AboutScreen extends StatelessWidget {
                   SizedBox(
                     height: 50,
                   ),
-                  Column(
-                    children: [
-                      AboutCard(
-                        image: AssetImage('assets/virtual/user1.png'),
-                        name: 'Afaq Ahmad ',
-                        contactNumber: '+92126246153',
-                        degree: 'Bachelor of Softwear Engineeering',
-                        university: 'Minhaj University',
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      AboutCard(
-                        image: AssetImage('assets/virtual/avatar2.png'),
-                        name: 'Unzila Mughal',
-                        contactNumber: '+92356158888',
-                        degree: 'Bachelor of Softwear Engineeering',
-                        university: 'Minhaj University',
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                    ],
+                  SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Text(
+                          about.isEmpty
+                              ? ""
+                              : about["Data"]["about_us"].toString(),
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                          ),
+                        )
+                        // AboutCard(
+                        //   image: AssetImage('assets/virtual/user1.png'),
+                        //   name: 'Afaq Ahmad ',
+                        //   contactNumber: '+92126246153',
+                        //   degree: 'Bachelor of Softwear Engineeering',
+                        //   university: 'Minhaj University',
+                        // ),
+                        // SizedBox(
+                        //   height: 20,
+                        // ),
+                        // AboutCard(
+                        //   image: AssetImage('assets/virtual/avatar2.png'),
+                        //   name: 'Unzila Mughal',
+                        //   contactNumber: '+92356158888',
+                        //   degree: 'Bachelor of Softwear Engineeering',
+                        //   university: 'Minhaj University',
+                        // ),
+                        // SizedBox(
+                        //   height: 20,
+                        // ),
+                      ],
+                    ),
                   ),
                 ],
               ),

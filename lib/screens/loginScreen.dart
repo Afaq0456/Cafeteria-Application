@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:freshman.cafe/const/severaddress.dart';
 import 'package:http/http.dart' as http;
@@ -33,15 +36,35 @@ class _LoginScreenState extends State<LoginScreen> {
         '$baseurl/api/customer/login?email=$email&password=$password');
 
     final response = await http.get(apiUrl);
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      log(data.toString());
+      if (data['statusCode'].toString() != "200") {
+        print('Login failed: ${response.body}');
+        // Show error message
+        _showErrorMessage('Login failed');
+        return;
+      }
+    }
 
     if (response.statusCode == 200) {
       // Login successful
       // Extract the bearer token from the response
-      final token = response.body;
+      final data = json.decode(response.body);
+      if (data['statusCode'].toString() == "401") {
+        print('Login failed: ${response.body}');
+        // Show error message
+        _showErrorMessage('Login failed');
+        return;
+      }
+      var token = data['access_token'];
 
       // Print the token
       print('Token: $token');
       final SharedPreferences prefs = await SharedPreferences.getInstance();
+      try {
+        prefs.remove('action');
+      } catch (e) {}
       await prefs.setString('action', '$token');
       // Store the token securely
       await storage.write(key: 'token', value: token);

@@ -1,16 +1,72 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 import '../const/colors.dart';
+import '../const/severaddress.dart';
 import '../utils/helper.dart';
 import '../widgets/customNavBar.dart';
 import '../screens/individualItem.dart';
 import '../widgets/searchBar.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   static const routeName = "/homeScreen";
+  const HomeScreen({Key key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  Map<String, dynamic> productsData = {};
+
+  Future<void> fetchProductsData() async {
+    setState(() {
+      productsData = {};
+    });
+    // Get the bearer token from shared preferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('action');
+    String baseurl = BaseUrl().baseUrl;
+
+    try {
+      var response = await http.get(
+        Uri.parse('$baseurl/api/customer/get/products'),
+        headers: {
+          'Authorization':
+              'Bearer $token', // Add the bearer token to the headers
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // If the server returns a 200 OK response, parse the data
+        var data = json.decode(response.body);
+        setState(() {
+          productsData = data;
+        });
+      } else {
+        // If the server did not return a 200 OK response, handle the error
+        print('Failed to load data: ${response.statusCode}');
+      }
+    } catch (error) {
+      // Handle other exceptions if any
+      print('Error: $error');
+    }
+  }
+
+  @override
+  void initState() {
+    fetchProductsData();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // floatingActionButton: FloatingActionButton(onPressed: () {
+      //   fetchProductsData();
+      // }),
       body: Stack(
         children: [
           SafeArea(
@@ -151,27 +207,40 @@ class HomeScreen extends StatelessWidget {
                   SizedBox(
                     height: 20,
                   ),
-                  RestaurantCard(
-                    image: Image.asset(
-                      Helper.getAssetName("pizza2.jpg", "real"),
-                      fit: BoxFit.cover,
-                    ),
-                    name: "Chicken fajita",
+                  ListView.builder(
+                    itemCount: productsData.isEmpty ? 0 : productsData["total"],
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: RestaurantCard(
+                          image: Image.network(
+                            // Helper.getAssetName("pizza2.jpg", "real"),
+                            BaseUrl().baseUrl +
+                                "/" +
+                                productsData["data"][index]['image'].toString(),
+                            fit: BoxFit.cover,
+                          ),
+                          name: productsData["data"][index]['name'].toString(),
+                        ),
+                      );
+                    },
                   ),
-                  RestaurantCard(
-                    image: Image.asset(
-                      Helper.getAssetName("breakfast.jpg", "real"),
-                      fit: BoxFit.cover,
-                    ),
-                    name: "Fruit salad",
-                  ),
-                  RestaurantCard(
-                    image: Image.asset(
-                      Helper.getAssetName("bakery.jpg", "real"),
-                      fit: BoxFit.cover,
-                    ),
-                    name: "Bakes",
-                  ),
+                  // RestaurantCard(
+                  //   image: Image.asset(
+                  //     Helper.getAssetName("breakfast.jpg", "real"),
+                  //     fit: BoxFit.cover,
+                  //   ),
+                  //   name: "Fruit salad",
+                  // ),
+                  // RestaurantCard(
+                  //   image: Image.asset(
+                  //     Helper.getAssetName("bakery.jpg", "real"),
+                  //     fit: BoxFit.cover,
+                  //   ),
+                  //   name: "Bakes",
+                  // ),
                   SizedBox(
                     height: 50,
                   ),

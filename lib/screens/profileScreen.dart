@@ -1,8 +1,15 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:freshman.cafe/const/colors.dart';
+import 'package:freshman.cafe/const/severaddress.dart';
+import 'package:freshman.cafe/screens/loginScreen.dart';
 import 'package:freshman.cafe/utils/helper.dart';
 import 'package:freshman.cafe/widgets/customNavBar.dart';
 import 'package:freshman.cafe/widgets/customTextInput.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'newPwScreen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -14,10 +21,129 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   bool isEditing = false;
+  Map<String, dynamic> profileData = {};
+  final TextEditingController user_name = TextEditingController();
+  final TextEditingController email = TextEditingController();
+
+  final TextEditingController cell_no = TextEditingController();
+  final TextEditingController user_address = TextEditingController();
+
+  Future<void> fetchProfileData() async {
+    setState(() {
+      profileData = {};
+    });
+    // Get the bearer token from shared preferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = await prefs.getString('action');
+    String baseurl = BaseUrl().baseUrl;
+    try {
+      var response = await http.get(
+        Uri.parse('$baseurl/api/customer/get'),
+        headers: {
+          'Authorization':
+              'Bearer $token', // Add the bearer token to the headers
+        },
+      );
+      // log(response.body);
+
+      if (response.statusCode == 200) {
+        // If the server returns a 200 OK response, parse the data
+        var data = json.decode(response.body);
+        setState(() {
+          profileData = data;
+          user_name.text = profileData["user"]["name"].toString();
+          email.text = profileData["user"]["email"].toString();
+          cell_no.text = profileData["user"]["phone"].toString();
+          user_address.text = profileData["user"]["address"].toString();
+        });
+      } else {
+        // If the server did not return a 200 OK response, handle the error
+        print('Failed to load data: ${response.statusCode}');
+      }
+    } catch (error) {
+      // Handle other exceptions if any
+      print('Error: $error');
+    }
+  }
+
+  Future<void> updateUser(name, address, cellno) async {
+    setState(() {
+      profileData = {};
+    });
+    // Get the bearer token from shared preferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = await prefs.getString('action');
+    String baseurl = BaseUrl().baseUrl;
+    Map<String, String> formData = {
+      'name': name,
+      'address': address,
+      'phone': cellno,
+    };
+    try {
+      var response = await http.post(
+        Uri.parse('$baseurl/api/customer/update'),
+        headers: {
+          'Authorization':
+              'Bearer $token', // Add the bearer token to the headers
+        },
+        body: formData,
+      );
+      // log(response.body);
+
+      if (response.statusCode == 200) {
+        // If the server returns a 200 OK response, parse the data
+        fetchProfileData();
+      } else {
+        // If the server did not return a 200 OK response, handle the error
+        print('Failed to load data: ${response.statusCode}');
+      }
+    } catch (error) {
+      // Handle other exceptions if any
+      print('Error: $error');
+    }
+  }
+
+  Future<void> logout() async {
+    // Get the bearer token from shared preferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = await prefs.getString('action');
+    String baseurl = BaseUrl().baseUrl;
+
+    try {
+      var response = await http.get(
+        Uri.parse('$baseurl/api/customer/logout'),
+        headers: {
+          'Authorization':
+              'Bearer $token', // Add the bearer token to the headers
+        },
+      );
+      // log(response.body);
+
+      if (response.statusCode == 200) {
+        // If the server returns a 200 OK response, parse the data
+        Navigator.pushReplacementNamed(context, LoginScreen.routeName);
+      } else {
+        // If the server did not return a 200 OK response, handle the error
+        print('Failed to load data: ${response.statusCode}');
+      }
+    } catch (error) {
+      // Handle other exceptions if any
+      print('Error: $error');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProfileData();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(onPressed: () {
+        fetchProfileData();
+      }),
       body: Stack(
         children: [
           SafeArea(
@@ -48,28 +174,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Container(
                               height: 80,
                               width: 80,
-                              child: Image.asset(
-                                Helper.getAssetName(
-                                  "user1.jpg",
-                                  "real",
-                                ),
-                                fit: BoxFit.cover,
+                              // child: Image.asset(
+                              //   // Helper.getAssetName(
+                              //   //   "user1.jpg",
+                              //   //   "real",
+                              //   // ),
+                              //   fit: BoxFit.cover,
+                              // ),
+                              child: Icon(
+                                Icons.person,
+                                size: 40,
                               ),
                             ),
-                            Positioned(
-                              bottom: 0,
-                              child: Container(
-                                height: 20,
-                                width: 80,
-                                color: Colors.black.withOpacity(0.3),
-                                child: Image.asset(
-                                  Helper.getAssetName(
-                                    "camera.png",
-                                    "virtual",
-                                  ),
-                                ),
-                              ),
-                            ),
+                            // Positioned(
+                            //   bottom: 0,
+                            //   child: Container(
+                            //     height: 20,
+                            //     width: 80,
+                            //     color: Colors.black.withOpacity(0.3),
+                            //     child: Image.asset(
+                            //       Helper.getAssetName(
+                            //         "camera.png",
+                            //         "virtual",
+                            //       ),
+                            //     ),
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),
@@ -86,7 +216,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       SizedBox(height: 5),
                       ElevatedButton(
                         onPressed: () {
-                          // Handle sign out functionality here
+                          logout();
                         },
                         style: ElevatedButton.styleFrom(
                           primary: Colors.transparent,
@@ -99,26 +229,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       SizedBox(height: 40),
                       CustomFormInput(
+                        text: user_name,
                         label: "Name",
-                        value: "",
                         isEditing: isEditing,
                       ),
                       SizedBox(height: 20),
                       CustomFormInput(
+                        text: email,
                         label: "Email",
-                        value: "",
                         isEditing: false,
                       ),
                       SizedBox(height: 20),
                       CustomFormInput(
+                        text: cell_no,
                         label: "Mobile No",
-                        value: "",
                         isEditing: isEditing,
                       ),
                       SizedBox(height: 20),
                       CustomFormInput(
+                        text: user_address,
                         label: "Address",
-                        value: "",
                         isEditing: isEditing,
                       ),
                       SizedBox(height: 20),
@@ -132,6 +262,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   setState(() {
                                     isEditing = false;
                                   });
+                                  updateUser(user_name.text, user_address.text,
+                                      cell_no.text);
                                 },
                                 child: Text("Save"),
                               )
@@ -139,6 +271,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 onPressed: () {
                                   setState(() {
                                     isEditing = true;
+                                    // user_name.text = "";
+                                    // email.text = "";
+                                    // cell_no.text = "";
+                                    // user_address.text = "";
                                   });
                                 },
                                 child: Text("Edit Profile"),
@@ -184,13 +320,13 @@ class CustomFormInput extends StatelessWidget {
   const CustomFormInput({
     Key key,
     @required this.label,
-    @required this.value,
+    @required this.text,
     this.isEditing = false,
   }) : super(key: key);
 
   final String label;
-  final String value;
   final bool isEditing;
+  final TextEditingController text;
 
   @override
   Widget build(BuildContext context) {
@@ -203,13 +339,13 @@ class CustomFormInput extends StatelessWidget {
         color: AppColor.placeholderBg,
       ),
       child: TextFormField(
+        controller: text,
         readOnly: !isEditing,
         decoration: InputDecoration(
           border: InputBorder.none,
           labelText: label,
           contentPadding: const EdgeInsets.only(top: 10, bottom: 10),
         ),
-        initialValue: value,
         style: TextStyle(
           fontSize: 14,
         ),

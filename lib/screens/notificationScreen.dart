@@ -1,10 +1,28 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:freshman.cafe/const/colors.dart';
+import 'package:freshman.cafe/const/severaddress.dart';
 import 'package:freshman.cafe/utils/helper.dart';
 import 'package:freshman.cafe/widgets/customNavBar.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
-class NotificationScreen extends StatelessWidget {
+class NotificationScreen extends StatefulWidget {
   static const routeName = "/notiScreen";
+
+  const NotificationScreen({Key key}) : super(key: key);
+
+  @override
+  State<NotificationScreen> createState() => _NotificationScreenState();
+}
+
+class _NotificationScreenState extends State<NotificationScreen> {
+  @override
+  void initState() {
+    noti();
+    super.initState();
+  }
 
   final List<NotificationModel> notifications = [
     NotificationModel(
@@ -35,6 +53,38 @@ class NotificationScreen extends StatelessWidget {
       color: AppColor.placeholderBg,
     ),
   ];
+
+  Map<String, dynamic> notification = {};
+  Future<void> noti() async {
+    // Get the bearer token from shared preferences
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('action');
+    String baseurl = BaseUrl().baseUrl;
+
+    String apiUrl = '$baseurl/api/customer/notifications/';
+
+    try {
+      var response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // If the server returns a 200 OK response, parse the response data
+        final responseData = json.decode(response.body);
+      } else {
+        // If the server did not return a 200 OK response, handle the error
+        print('Failed to fetch data: ${response.statusCode}');
+        return null;
+      }
+    } catch (error) {
+      // Handle other exceptions if any
+      print('Error: $error');
+      return null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

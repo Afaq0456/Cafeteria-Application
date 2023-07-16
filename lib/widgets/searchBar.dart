@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freshman.cafe/const/colors.dart';
+import 'package:freshman.cafe/screens/searchpage_hammad.dart';
 import 'package:freshman.cafe/utils/helper.dart';
 
 class SearchBar extends StatelessWidget {
@@ -17,6 +18,10 @@ class SearchBar extends StatelessWidget {
           color: AppColor.placeholderBg,
         ),
         child: TextField(
+          onTap: () {
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => searchPage()));
+          },
           decoration: InputDecoration(
             border: InputBorder.none,
             prefixIcon: Image.asset(
