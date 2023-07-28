@@ -1,11 +1,40 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:freshman.cafe/const/colors.dart';
 import 'package:freshman.cafe/utils/helper.dart';
 import 'package:freshman.cafe/widgets/customNavBar.dart';
 import 'package:freshman.cafe/screens/paymentScreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class WalletScreen extends StatelessWidget {
+class WalletScreen extends StatefulWidget {
   static const routeName = "/walletScreen";
+
+  const WalletScreen({Key key}) : super(key: key);
+
+  @override
+  State<WalletScreen> createState() => _WalletScreenState();
+}
+
+class _WalletScreenState extends State<WalletScreen> {
+  String balance = "";
+  get_wallet() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String encodedMap = prefs.getString('all');
+    Map<String, dynamic> decodedMap = json.decode(encodedMap);
+
+    setState(() {
+      balance = decodedMap["user"]["wallet_amount"].toString();
+    });
+  }
+
+  @override
+  void initState() {
+    get_wallet();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +79,7 @@ class WalletScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  "PKR 500",
+                  "$balance",
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,

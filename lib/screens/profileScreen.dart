@@ -141,9 +141,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(onPressed: () {
-        fetchProfileData();
-      }),
+      // floatingActionButton: FloatingActionButton(onPressed: () {
+      //   fetchProfileData();
+      // }),
       body: Stack(
         children: [
           SafeArea(

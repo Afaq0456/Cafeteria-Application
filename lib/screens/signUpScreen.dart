@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:freshman.cafe/const/severaddress.dart';
 import 'package:http/http.dart' as http;
@@ -38,10 +40,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
       );
 
       if (response.statusCode == 200) {
-        // Successful registration
+        var data = json.decode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(data["Message"].toString()),
+          ),
+        );
         Navigator.pushReplacementNamed(context, LoginScreen.routeName);
       } else {
-        // Registration failed
+        var data = json.decode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(data["Message"].toString()),
+          ),
+        ); // Registration failed
         // Handle the error here
       }
     }

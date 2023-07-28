@@ -1,14 +1,21 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'dart:developer';
 
+import 'package:flutter/material.dart';
+import 'package:freshman.cafe/screens/loginScreen.dart';
+import 'package:http/http.dart' as http;
 import '../const/colors.dart';
+import '../const/severaddress.dart';
 import '../utils/helper.dart';
 import './newPwScreen.dart';
 
 class SendOTPScreen extends StatefulWidget {
   static const routeName = "/sendOTP";
+  final email;
+  SendOTPScreen({Key key, @required this.email}) : super(key: key);
 
   @override
-  _SendOTPScreenState createState() => _SendOTPScreenState();
+  State<SendOTPScreen> createState() => _SendOTPScreenState();
 }
 
 class _SendOTPScreenState extends State<SendOTPScreen> {
@@ -21,6 +28,37 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
     _focusNodes = List.generate(4, (index) => FocusNode());
     _controllers = List.generate(4, (index) => TextEditingController());
     _addFocusListeners();
+  }
+
+  void _submitForm() async {
+    String baseurl = BaseUrl().baseUrl;
+    final Uri apiUrl = Uri.parse('$baseurl/api/customer/verify_email');
+    final response = await http.post(
+      apiUrl,
+      body: {
+        'email': "${widget.email}",
+        "otp":
+            "${_controllers[0].text}${_controllers[1].text}${_controllers[2].text}${_controllers[3].text}"
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(data["Message"].toString()),
+        ),
+      );
+      Navigator.pushReplacementNamed(context, LoginScreen.routeName);
+    } else {
+      var data = json.decode(response.body);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(data["Message"].toString()),
+        ),
+      ); // Registration failed
+      // Handle the error here
+    }
   }
 
   @override
@@ -88,9 +126,8 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
                 height: 50,
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context)
-                        .pushReplacementNamed(NewPwScreen.routeName);
+                  onPressed: () async {
+                    await _submitForm();
                   },
                   child: Text("Next"),
                 ),
@@ -99,12 +136,18 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Didn't receive the OTP? "),
-                  Text(
-                    "Click Here",
-                    style: TextStyle(
-                      color: AppColor.purple,
-                      fontWeight: FontWeight.bold,
+                  Text("Go To The login screen? "),
+                  InkWell(
+                    onTap: () {
+                      Navigator.pushReplacementNamed(
+                          context, LoginScreen.routeName);
+                    },
+                    child: Text(
+                      "Click Here",
+                      style: TextStyle(
+                        color: AppColor.purple,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
