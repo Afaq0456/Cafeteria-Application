@@ -175,6 +175,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
+                      // Navigator.pushReplacementNamed(
+                      //     context, IntroScreen.routeName);
+
                       if (_validateInputs(email, password)) {
                         _login(context);
                       } else {

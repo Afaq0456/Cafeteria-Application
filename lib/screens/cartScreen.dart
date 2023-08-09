@@ -46,6 +46,7 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // print("${cartItems}");
     return Scaffold(
       appBar: AppBar(
         title: Text("Cart"),
@@ -238,7 +239,7 @@ class _CartScreenState extends State<CartScreen> {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       Navigator.pushNamed(
                         context,
                         CheckoutScreen.routeName,

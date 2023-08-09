@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:freshman.cafe/const/colors.dart';
+import 'package:freshman.cafe/screens/cartScreen.dart';
 import 'package:freshman.cafe/screens/changeAddressScreen.dart';
 import 'package:freshman.cafe/screens/homeScreen.dart';
 import 'package:freshman.cafe/utils/helper.dart';
@@ -14,7 +15,7 @@ import '../const/severaddress.dart';
 class CheckoutScreen extends StatelessWidget {
   static const routeName = "/checkoutScreen";
   final TextEditingController addressController = TextEditingController();
-  Future<void> placeOrder(Map<String, dynamic> data) async {
+  Future<void> placeOrder(List<Map<String, dynamic>> data) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = await prefs.getString(
         'action'); // Replace 'action' with your token key from shared preferences
@@ -29,7 +30,13 @@ class CheckoutScreen extends StatelessWidget {
         headers: {
           'Authorization': 'Bearer $token',
         },
-        body: jsonEncode(data),
+        body: jsonEncode({
+          "products": [
+            data,
+          ],
+          "customer_address": "lahore",
+          "customer_note": "this my note"
+        }),
       );
 
       if (response.statusCode == 200) {
@@ -511,26 +518,31 @@ class CheckoutScreen extends StatelessWidget {
                     height: 50,
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
-                        placeOrder({
-                          "customer_name": "M Bilal",
-                          "customer_address": addressController.text,
-                          "customer_note": "this my note",
-                          "order_status": "pending",
-                          "est_time": 12,
-                          "order_placed_at": "2023-05-12 12:20:42",
-                          "order_confimed_at": "2023-05-12 14:20:42",
-                          "order_completed_at": "2023-05-12 14:20:42",
-                          "sales_tax": "12",
-                          "platform_fee": "12",
-                          "is_refunded": 1,
-                          "refunded": 12,
-                          "discount": 12,
-                          "total": 12,
-                          "feedback_notify": 1,
-                          "review_completed": 1,
-                          "customer_id": 1
-                        });
+                      onPressed: () async {
+                        List<Map<String, dynamic>> data = [];
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+                        List<String> cartItemsJson =
+                            prefs.getStringList('cart_items') ?? [];
+                        List<CartItem> cartItems = cartItemsJson
+                            .map((item) => CartItem.fromJson(json.decode(item)))
+                            .toList();
+                        for (int i = 0; i < cartItems.length; i++) {
+                          CartItem cartItem = cartItems[i];
+
+                          data.add({
+                            "product_id": cartItem.productId,
+                            "name": cartItem.productName,
+                            "description": cartItem.productDescription,
+                            "unit_price": cartItem.unitPrice,
+                            "image": cartItem.productImage,
+                            "quantity": cartItem.quantity
+                          });
+                        }
+
+                        placeOrder(
+                          data,
+                        );
                         showModalBottomSheet(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
