@@ -16,6 +16,7 @@ import './screens/offerScreen.dart';
 import './screens/profileScreen.dart';
 import './screens/dessertScreen.dart';
 import './screens/individualItem.dart';
+import './screens/cartScreen.dart';
 import './screens/paymentScreen.dart';
 import './screens/notificationScreen.dart';
 import './screens/aboutScreen.dart';
@@ -98,6 +99,7 @@ class MyApp extends StatelessWidget {
         MoreScreen.routeName: (context) => MoreScreen(),
         DessertScreen.routeName: (context) => DessertScreen(),
         IndividualItem.routeName: (context) => IndividualItem(),
+        CartScreen.routeName: (context) => CartScreen(),
         PaymentScreen.routeName: (context) => PaymentScreen(),
         NotificationScreen.routeName: (context) => NotificationScreen(),
         AboutScreen.routeName: (context) => AboutScreen(),

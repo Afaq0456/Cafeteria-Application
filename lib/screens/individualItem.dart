@@ -1,11 +1,66 @@
-import 'package:clip_shadow/clip_shadow.dart';
 import 'package:flutter/material.dart';
+import 'package:clip_shadow/clip_shadow.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:freshman.cafe/const/colors.dart';
 import 'package:freshman.cafe/utils/helper.dart';
 import 'package:freshman.cafe/widgets/customNavBar.dart';
+import 'cartScreen.dart';
+import 'dart:convert';
 
-class IndividualItem extends StatelessWidget {
+class IndividualItem extends StatefulWidget {
   static const routeName = "/individualScreen";
+
+  @override
+  _IndividualItemState createState() => _IndividualItemState();
+}
+
+class _IndividualItemState extends State<IndividualItem> {
+  int quantity = 1; // Initial quantity
+  double unitPrice = 750.0; // Replace this with the actual unit price
+
+  Future<List<CartItem>> _getCartItems() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> cartItemsJson = prefs.getStringList('cart_items') ?? [];
+    List<CartItem> cartItems = cartItemsJson
+        .map((item) => CartItem.fromJson(json.decode(item)))
+        .toList();
+    return cartItems;
+  }
+
+  Future<void> _saveCartItems(List<CartItem> cartItems) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> cartItemsJson =
+        cartItems.map((item) => json.encode(item.toJson())).toList();
+    await prefs.setStringList('cart_items', cartItemsJson);
+  }
+
+  void _addToCart(BuildContext context) async {
+    // Get the product details (Replace these with your actual product details)
+    String productId = "1";
+    String productName = "Tandoori Chicken Pizza";
+    String productDescription =
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ornare leo non mollis id cursus. Eu euismod faucibus in leo malesuada";
+    String productImage = "tandoori_chicken_pizza.jpg";
+
+    // Create a cart item object
+    CartItem cartItem = CartItem(
+      productId: productId,
+      productName: productName,
+      productDescription: productDescription,
+      unitPrice: unitPrice,
+      productImage: productImage,
+      quantity: quantity,
+    );
+
+    // Save the cart item to local storage
+    List<CartItem> cartItems = await _getCartItems();
+    cartItems.add(cartItem);
+    await _saveCartItems(cartItems);
+
+    // Navigate to the cart screen and pass the data
+    Navigator.pushNamed(context, CartScreen.routeName, arguments: cartItems);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -123,53 +178,41 @@ class IndividualItem extends StatelessWidget {
                                                             "star_filled.png",
                                                             "virtual"),
                                                       ),
-                                                      SizedBox(
-                                                        width: 8,
-                                                      ),
+                                                      SizedBox(width: 8),
                                                       Image.asset(
                                                         Helper.getAssetName(
                                                             "star_filled.png",
                                                             "virtual"),
                                                       ),
-                                                      SizedBox(
-                                                        width: 8,
-                                                      ),
+                                                      SizedBox(width: 8),
                                                       Image.asset(
                                                         Helper.getAssetName(
                                                             "star_filled.png",
                                                             "virtual"),
                                                       ),
-                                                      SizedBox(
-                                                        width: 8,
-                                                      ),
+                                                      SizedBox(width: 8),
                                                       Image.asset(
                                                         Helper.getAssetName(
                                                             "star_filled.png",
                                                             "virtual"),
                                                       ),
-                                                      SizedBox(
-                                                        width: 8,
-                                                      ),
+                                                      SizedBox(width: 8),
                                                       Image.asset(
                                                         Helper.getAssetName(
                                                             "star.png",
                                                             "virtual"),
                                                       ),
-                                                      SizedBox(
-                                                        width: 8,
-                                                      ),
+                                                      SizedBox(width: 8),
                                                     ],
                                                   ),
-                                                  SizedBox(
-                                                    height: 5,
-                                                  ),
+                                                  SizedBox(height: 5),
                                                   Text(
                                                     "4 Star Ratings",
                                                     style: TextStyle(
                                                       color: AppColor.purple,
                                                       fontSize: 12,
                                                     ),
-                                                  )
+                                                  ),
                                                 ],
                                               ),
                                               Expanded(
@@ -177,11 +220,9 @@ class IndividualItem extends StatelessWidget {
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.end,
                                                   children: [
-                                                    SizedBox(
-                                                      height: 20,
-                                                    ),
+                                                    SizedBox(height: 20),
                                                     Text(
-                                                      "Rs. 750",
+                                                      "Rs. ${unitPrice.toStringAsFixed(2)}",
                                                       style: TextStyle(
                                                         color: AppColor.primary,
                                                         fontSize: 30,
@@ -189,10 +230,10 @@ class IndividualItem extends StatelessWidget {
                                                             FontWeight.w700,
                                                       ),
                                                     ),
-                                                    Text("/per Portion")
+                                                    Text("/per Portion"),
                                                   ],
                                                 ),
-                                              )
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -359,7 +400,13 @@ class IndividualItem extends StatelessWidget {
                                                           elevation:
                                                               MaterialStateProperty
                                                                   .all(5.0)),
-                                                      onPressed: () {},
+                                                      onPressed: () {
+                                                        if (quantity > 1) {
+                                                          setState(() {
+                                                            quantity--;
+                                                          });
+                                                        }
+                                                      },
                                                       child: Text("-"),
                                                     ),
                                                     SizedBox(
@@ -382,7 +429,7 @@ class IndividualItem extends StatelessWidget {
                                                                 .center,
                                                         children: [
                                                           Text(
-                                                            "2",
+                                                            "$quantity",
                                                             style: TextStyle(
                                                               color: AppColor
                                                                   .purple,
@@ -399,7 +446,11 @@ class IndividualItem extends StatelessWidget {
                                                           elevation:
                                                               MaterialStateProperty
                                                                   .all(5.0)),
-                                                      onPressed: () {},
+                                                      onPressed: () {
+                                                        setState(() {
+                                                          quantity++;
+                                                        });
+                                                      },
                                                       child: Text("+"),
                                                     ),
                                                   ],
@@ -486,7 +537,7 @@ class IndividualItem extends StatelessWidget {
                                                           height: 10,
                                                         ),
                                                         Text(
-                                                          "PKR 1500",
+                                                          "PKR ${(unitPrice * quantity).toStringAsFixed(2)}",
                                                           style: TextStyle(
                                                             color: AppColor
                                                                 .primary,
@@ -499,7 +550,10 @@ class IndividualItem extends StatelessWidget {
                                                         SizedBox(
                                                           width: 200,
                                                           child: ElevatedButton(
-                                                              onPressed: () {},
+                                                              onPressed: () {
+                                                                _addToCart(
+                                                                    context);
+                                                              },
                                                               child: Row(
                                                                 mainAxisAlignment:
                                                                     MainAxisAlignment

@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:freshman.cafe/const/colors.dart';
 import 'package:freshman.cafe/screens/changeAddressScreen.dart';
@@ -9,11 +8,12 @@ import 'package:freshman.cafe/widgets/customNavBar.dart';
 import 'package:freshman.cafe/widgets/customTextInput.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:flutter/services.dart';
 import '../const/severaddress.dart';
 
 class CheckoutScreen extends StatelessWidget {
   static const routeName = "/checkoutScreen";
+  final TextEditingController addressController = TextEditingController();
   Future<void> placeOrder(Map<String, dynamic> data) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = await prefs.getString(
@@ -48,6 +48,21 @@ class CheckoutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
+
+    if (args == null || args['totalAmount'] == null) {
+      // Handle the case where arguments are null or not provided
+      return Scaffold(
+        body: Center(
+          child: Text("Error: Missing total amount."),
+        ),
+      );
+    }
+    double totalAmount = args['totalAmount'];
+    double discountAmount = totalAmount * 0.05;
+    double deliveryCost = 10;
+    double updatedTotal = totalAmount - discountAmount + deliveryCost;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -89,10 +104,15 @@ class CheckoutScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       SizedBox(
-                        width: Helper.getScreenWidth(context) * 0.4,
-                        child: Text(
-                          "Minhaj Universty Lahore, Punjab Pakistan",
-                          style: Helper.getTheme(context).headline3,
+                        width: Helper.getScreenWidth(context) * 0.6,
+                        child: TextField(
+                          controller: addressController,
+                          decoration: InputDecoration(
+                            hintText: "Enter your delivery address...",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          ),
                         ),
                       ),
                       TextButton(
@@ -353,7 +373,7 @@ class CheckoutScreen extends StatelessWidget {
                           SizedBox(
                             width: 10,
                           ),
-                          Text("**** **** **** 2187"),
+                          Text("** ** ** 2187"),
                         ],
                       ),
                       Container(
@@ -425,7 +445,7 @@ class CheckoutScreen extends StatelessWidget {
                         children: [
                           Text("Sub Total"),
                           Text(
-                            "PKR 968",
+                            "PKR ${totalAmount.toStringAsFixed(2)}", // Display totalAmount as Sub Total
                             style: Helper.getTheme(context).headline3,
                           )
                         ],
@@ -438,7 +458,7 @@ class CheckoutScreen extends StatelessWidget {
                         children: [
                           Text("Delivery Cost"),
                           Text(
-                            "pKR 120",
+                            "PKR 10",
                             style: Helper.getTheme(context).headline3,
                           )
                         ],
@@ -449,9 +469,9 @@ class CheckoutScreen extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Discount"),
+                          Text("Discount 5%"),
                           Text(
-                            "PKR 140",
+                            "PKR ${discountAmount.toStringAsFixed(2)}",
                             style: Helper.getTheme(context).headline3,
                           )
                         ],
@@ -466,7 +486,7 @@ class CheckoutScreen extends StatelessWidget {
                         children: [
                           Text("Total"),
                           Text(
-                            "PKR 988",
+                            "PKR ${updatedTotal.toStringAsFixed(2)}", // Display updated total
                             style: Helper.getTheme(context).headline3,
                           )
                         ],
@@ -494,7 +514,7 @@ class CheckoutScreen extends StatelessWidget {
                       onPressed: () {
                         placeOrder({
                           "customer_name": "M Bilal",
-                          "customer_address": "lahore",
+                          "customer_address": addressController.text,
                           "customer_note": "this my note",
                           "order_status": "pending",
                           "est_time": 12,
