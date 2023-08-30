@@ -4,6 +4,7 @@ import 'package:freshman.cafe/utils/helper.dart';
 import 'package:freshman.cafe/widgets/customNavBar.dart';
 import 'checkoutScreen.dart';
 import 'cartScreen.dart';
+import '../const/severaddress.dart';
 
 class MyOrderScreen extends StatelessWidget {
   static const routeName = "/myOrderScreen";
@@ -28,12 +29,13 @@ class MyOrderScreen extends StatelessWidget {
 
     CartItem cartItem = args['cartItem'];
     double totalAmount = args['totalAmount'];
-
+    String baseurl = BaseUrl().baseUrl;
     return Scaffold(
       appBar: AppBar(
         title: Text(
           "My Order",
         ),
+        backgroundColor: AppColor.purple,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -55,8 +57,8 @@ class MyOrderScreen extends StatelessWidget {
                     child: Container(
                       height: 100,
                       width: 100,
-                      child: Image.asset(
-                        Helper.getAssetName(cartItem.productImage, "real"),
+                      child: Image.network(
+                        ("$baseurl/${cartItem.productImage}"),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -236,6 +238,7 @@ class MyOrderScreen extends StatelessWidget {
                           CheckoutScreen.routeName,
                           arguments: {
                             'totalAmount': totalAmount,
+                            'notesController': notesController,
                           },
                         );
                       },

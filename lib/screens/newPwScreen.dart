@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/helper.dart';
 import '../widgets/customTextInput.dart';
 import './introScreen.dart';
+import 'loginScreen.dart';
 import 'package:http/http.dart' as http;
 
 class NewPwScreen extends StatelessWidget {
@@ -150,7 +151,7 @@ class NewPwScreen extends StatelessWidget {
                           newpass2.text.isNotEmpty) {
                         await changePassword(newpass, oldpass1);
                         Navigator.of(context)
-                            .pushReplacementNamed(IntroScreen.routeName);
+                            .pushReplacementNamed(LoginScreen.routeName);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(

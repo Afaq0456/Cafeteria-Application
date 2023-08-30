@@ -5,6 +5,7 @@ import 'checkoutScreen.dart';
 import 'myOrderScreen.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../const/severaddress.dart';
 
 class CartScreen extends StatefulWidget {
   static const routeName = "/cartScreen";
@@ -25,8 +26,14 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   double calculateTotalAmount() {
-    return cartItems.fold(
-        0, (sum, item) => sum + (item.unitPrice * item.quantity));
+    double total = 0;
+    for (var item in cartItems) {
+      final unitPrice = item.unitPrice ?? 0;
+      final quantity = item.quantity ?? 1;
+
+      total += (unitPrice * quantity);
+    }
+    return total;
   }
 
   void _removeProductFromCart(BuildContext context, CartItem cartItem) {
@@ -46,6 +53,7 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String baseurl = BaseUrl().baseUrl;
     // print("${cartItems}");
     return Scaffold(
       appBar: AppBar(
@@ -61,6 +69,7 @@ class _CartScreenState extends State<CartScreen> {
             Helper.getAssetName("cart.png", "virtual"),
           ),
         ],
+        backgroundColor: AppColor.purple,
       ),
       body: cartItems == null || cartItems.isEmpty
           ? Center(
@@ -90,9 +99,8 @@ class _CartScreenState extends State<CartScreen> {
                         children: [
                           Expanded(
                             flex: 2,
-                            child: Image.asset(
-                              Helper.getAssetName(
-                                  cartItem.productImage, "real"),
+                            child: Image.network(
+                              ("$baseurl/${cartItem.productImage}"),
                               height: 80,
                               width: 80,
                               fit: BoxFit.contain,

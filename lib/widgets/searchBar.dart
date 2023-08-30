@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freshman.cafe/const/colors.dart';
-import 'package:freshman.cafe/screens/searchpage_hammad.dart';
+import 'package:freshman.cafe/screens/searchpage.dart';
 import 'package:freshman.cafe/utils/helper.dart';
 
 class SearchBar extends StatelessWidget {

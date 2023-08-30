@@ -1,3 +1,3 @@
 class BaseUrl {
-  String baseUrl = "https://5130-103-191-123-13.ngrok-free.app";
+  String baseUrl = "https://00c7-103-191-123-121.ngrok-free.app";
 }

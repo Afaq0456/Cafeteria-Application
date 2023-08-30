@@ -6,6 +6,7 @@ import 'package:freshman.cafe/utils/helper.dart';
 import 'package:freshman.cafe/widgets/customNavBar.dart';
 import 'cartScreen.dart';
 import 'dart:convert';
+import '../const/severaddress.dart';
 
 class IndividualItem extends StatefulWidget {
   static const routeName = "/individualScreen";
@@ -15,15 +16,43 @@ class IndividualItem extends StatefulWidget {
 }
 
 class _IndividualItemState extends State<IndividualItem> {
+  Map<String, dynamic> productData = {};
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (productData.isEmpty) {
+      Map<String, dynamic> args = ModalRoute.of(context).settings.arguments;
+      setState(() {
+        productData = args;
+      });
+    }
+  }
+
   int quantity = 1; // Initial quantity
-  double unitPrice = 750.0; // Replace this with the actual unit price
+  String productId = "";
+  String productName = "";
+  String productDescription = "";
+  double unitPrice;
+  String productImage = "";
 
   Future<List<CartItem>> _getCartItems() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> cartItemsJson = prefs.getStringList('cart_items') ?? [];
-    List<CartItem> cartItems = cartItemsJson
-        .map((item) => CartItem.fromJson(json.decode(item)))
-        .toList();
+    List<CartItem> cartItems = [];
+
+    for (String itemJson in cartItemsJson) {
+      try {
+        Map<String, dynamic> itemData = json.decode(itemJson);
+
+        CartItem cartItem = CartItem.fromJson(itemData);
+        cartItems.add(cartItem);
+      } catch (e) {
+        print("Error parsing cart item: $e");
+        // Handle the error as needed
+      }
+    }
+
     return cartItems;
   }
 
@@ -34,13 +63,16 @@ class _IndividualItemState extends State<IndividualItem> {
     await prefs.setStringList('cart_items', cartItemsJson);
   }
 
-  void _addToCart(BuildContext context) async {
+  void _addToCart(
+      BuildContext context, Map<String, dynamic> productData) async {
     // Get the product details (Replace these with your actual product details)
-    String productId = "1";
-    String productName = "Tandoori Chicken Pizza";
-    String productDescription =
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ornare leo non mollis id cursus. Eu euismod faucibus in leo malesuada";
-    String productImage = "tandoori_chicken_pizza.jpg";
+    String productId =
+        productData['productId'].toString(); // Convert to String if needed
+    String productName = productData['productName'];
+    String productDescription = productData['productDescription'];
+    double unitPrice =
+        double.parse(productData['unitPrice'].toString()); // Convert to double
+    String productImage = productData['productImage'];
 
     // Create a cart item object
     CartItem cartItem = CartItem(
@@ -63,6 +95,15 @@ class _IndividualItemState extends State<IndividualItem> {
 
   @override
   Widget build(BuildContext context) {
+    final routeArgs =
+        ModalRoute.of(context).settings.arguments as Map<String, dynamic>;
+
+    final productId = routeArgs['productId'];
+    final productName = routeArgs['productName'];
+    final productDescription = routeArgs['productDescription'];
+    final unitPrice = routeArgs['unitPrice'];
+    final productImage = routeArgs['productImage'];
+    String baseurl = BaseUrl().baseUrl;
     return Scaffold(
       body: Stack(
         children: [
@@ -76,8 +117,8 @@ class _IndividualItemState extends State<IndividualItem> {
                         SizedBox(
                           height: Helper.getScreenHeight(context) * 0.5,
                           width: Helper.getScreenWidth(context),
-                          child: Image.asset(
-                            Helper.getAssetName("pizza3.jpg", "real"),
+                          child: Image.network(
+                            "$baseurl/$productImage",
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -155,7 +196,7 @@ class _IndividualItemState extends State<IndividualItem> {
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 20),
                                           child: Text(
-                                            "Tandoori Chicken Pizza",
+                                            productName,
                                             style: Helper.getTheme(context)
                                                 .headline5,
                                           ),
@@ -256,7 +297,8 @@ class _IndividualItemState extends State<IndividualItem> {
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 20),
                                           child: Text(
-                                              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ornare leo non mollis id cursus. Eu euismod faucibus in leo malesuada"),
+                                            productDescription,
+                                          ),
                                         ),
                                         SizedBox(
                                           height: 20,
@@ -537,7 +579,11 @@ class _IndividualItemState extends State<IndividualItem> {
                                                           height: 10,
                                                         ),
                                                         Text(
-                                                          "PKR ${(unitPrice * quantity).toStringAsFixed(2)}",
+                                                          unitPrice != null &&
+                                                                  quantity !=
+                                                                      null
+                                                              ? "PKR ${(unitPrice * quantity).toStringAsFixed(2)}"
+                                                              : "PKR 0.00",
                                                           style: TextStyle(
                                                             color: AppColor
                                                                 .primary,
@@ -551,8 +597,16 @@ class _IndividualItemState extends State<IndividualItem> {
                                                           width: 200,
                                                           child: ElevatedButton(
                                                               onPressed: () {
-                                                                _addToCart(
-                                                                    context);
+                                                                if (productData != null &&
+                                                                    productData[
+                                                                            'unitPrice'] !=
+                                                                        null &&
+                                                                    quantity !=
+                                                                        null) {
+                                                                  _addToCart(
+                                                                      context,
+                                                                      productData); // Pass both context and productData
+                                                                }
                                                               },
                                                               child: Row(
                                                                 mainAxisAlignment:

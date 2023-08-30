@@ -212,21 +212,37 @@ class _HomeScreenState extends State<HomeScreen> {
                     physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: RestaurantCard(
-                          image: Image.network(
-                            // Helper.getAssetName("pizza2.jpg", "real"),
-                            BaseUrl().baseUrl +
-                                "/" +
-                                productsData["data"][index]['image'].toString(),
-                            fit: BoxFit.cover,
+                      var product = productsData["data"][index];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            IndividualItem.routeName,
+                            arguments: {
+                              'productId': product['id'],
+                              'productName': product['name'],
+                              'productDescription': product['description'],
+                              'unitPrice': product['unit_price'],
+                              'productImage': product['image'],
+                            },
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: RestaurantCard(
+                            image: Image.network(
+                              BaseUrl().baseUrl +
+                                  "/" +
+                                  product['image'].toString(),
+                              fit: BoxFit.cover,
+                            ),
+                            name: product['name'].toString(),
                           ),
-                          name: productsData["data"][index]['name'].toString(),
                         ),
                       );
                     },
                   ),
+
                   // RestaurantCard(
                   //   image: Image.asset(
                   //     Helper.getAssetName("breakfast.jpg", "real"),

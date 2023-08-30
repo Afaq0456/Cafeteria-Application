@@ -4,6 +4,7 @@ import 'package:freshman.cafe/const/colors.dart';
 import 'package:freshman.cafe/screens/cartScreen.dart';
 import 'package:freshman.cafe/screens/changeAddressScreen.dart';
 import 'package:freshman.cafe/screens/homeScreen.dart';
+import 'generateBillScreen.dart';
 import 'package:freshman.cafe/utils/helper.dart';
 import 'package:freshman.cafe/widgets/customNavBar.dart';
 import 'package:freshman.cafe/widgets/customTextInput.dart';
@@ -12,17 +13,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 import '../const/severaddress.dart';
 
-class CheckoutScreen extends StatelessWidget {
+class CheckoutScreen extends StatefulWidget {
   static const routeName = "/checkoutScreen";
+  @override
+  _CheckoutScreenState createState() => _CheckoutScreenState();
+}
+
+class _CheckoutScreenState extends State<CheckoutScreen> {
   final TextEditingController addressController = TextEditingController();
-  Future<void> placeOrder(List<Map<String, dynamic>> data) async {
+  bool isAddressValid = false; // Track the validity of the address
+  Future<void> placeOrder(List<Map<String, dynamic>> data,
+      String customerAddress, String customerNote) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = await prefs.getString(
         'action'); // Replace 'action' with your token key from shared preferences
     String baseurl = BaseUrl().baseUrl;
     String apiUrl = '$baseurl/api/customer/order/create';
-
-    // Add the query parameters to the URL
 
     try {
       var response = await http.post(
@@ -31,18 +37,19 @@ class CheckoutScreen extends StatelessWidget {
           'Authorization': 'Bearer $token',
         },
         body: jsonEncode({
-          "products": [
-            data,
-          ],
-          "customer_address": "lahore",
-          "customer_note": "this my note"
+          "products": data,
+          "customer_address": customerAddress,
+          "customer_note": customerNote,
         }),
       );
 
       if (response.statusCode == 200) {
         // If the server returns a 200 OK response, parse the response data
         var responseData = json.decode(response.body);
+        // Print the data before sending
         print('Response Data: $responseData');
+        // Clear the cart items from SharedPreferences
+        prefs.remove('cart_items');
       } else {
         // If the server did not return a 200 OK response, handle the error
         print('Failed to post data: ${response.statusCode}');
@@ -65,6 +72,7 @@ class CheckoutScreen extends StatelessWidget {
         ),
       );
     }
+    TextEditingController notesController = args['notesController'];
     double totalAmount = args['totalAmount'];
     double discountAmount = totalAmount * 0.05;
     double deliveryCost = 10;
@@ -98,13 +106,12 @@ class CheckoutScreen extends StatelessWidget {
                 SizedBox(
                   height: 20,
                 ),
+                SizedBox(height: 20),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Text("Delivery Address"),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
+                SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
@@ -112,14 +119,21 @@ class CheckoutScreen extends StatelessWidget {
                     children: [
                       SizedBox(
                         width: Helper.getScreenWidth(context) * 0.6,
-                        child: TextField(
+                        child: TextFormField(
                           controller: addressController,
                           decoration: InputDecoration(
                             hintText: "Enter your delivery address...",
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
+                            errorText:
+                                isAddressValid ? null : "Address is required",
                           ),
+                          onChanged: (value) {
+                            setState(() {
+                              isAddressValid = value.isNotEmpty;
+                            });
+                          },
                         ),
                       ),
                       TextButton(
@@ -540,8 +554,13 @@ class CheckoutScreen extends StatelessWidget {
                           });
                         }
 
+                        String customerAddress = addressController.text;
+                        String customerNote = notesController.text;
+
                         placeOrder(
                           data,
+                          customerAddress,
+                          customerNote,
                         );
                         showModalBottomSheet(
                             shape: RoundedRectangleBorder(
@@ -601,21 +620,39 @@ class CheckoutScreen extends StatelessWidget {
                                       child: Text(
                                           "Your order is now being processed. We will let you know once the order is picked from the outlet. Check the status of your order"),
                                     ),
-                                    SizedBox(
-                                      height: 60,
-                                    ),
+                                    SizedBox(height: 20),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
-                                        horizontal: 20,
-                                      ),
+                                          horizontal: 20),
                                       child: SizedBox(
                                         height: 50,
                                         width: double.infinity,
                                         child: ElevatedButton(
-                                          onPressed: () {},
-                                          child: Text("Track My Order"),
+                                          onPressed: () {
+                                            Navigator.of(context)
+                                                .pop(); // Close the bottom sheet
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    GenerateBillScreen(
+                                                  totalAmount: totalAmount,
+                                                  discountAmount:
+                                                      discountAmount,
+                                                  deliveryCost: deliveryCost,
+                                                  updatedTotal: updatedTotal,
+                                                  cartItems:
+                                                      cartItems, // Make sure you pass the cartItems here
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          child: Text("Invoice"),
                                         ),
                                       ),
+                                    ),
+                                    SizedBox(
+                                      height: 20,
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
@@ -635,7 +672,7 @@ class CheckoutScreen extends StatelessWidget {
                                           ),
                                         ),
                                       ),
-                                    )
+                                    ),
                                   ],
                                 ),
                               );
