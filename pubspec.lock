@@ -5,10 +5,18 @@ packages:
     dependency: transitive
     description:
       name: archive
-      sha256: "0c8368c9b3f0abbc193b9d6133649a614204b528982bebc7026372d61677ce3a"
+      sha256: f06332efd7b0886705a929c5d3b52cda4d6d0979627c1dbe9a18fc24becf50ae
       url: "https://pub.dev"
     source: hosted
-    version: "3.3.7"
+    version: "2.0.13"
+  args:
+    dependency: transitive
+    description:
+      name: args
+      sha256: "6ba785824030bc97154264652acfd6a2dc699cd85f6def708fb7534d23ef1348"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.6.0"
   async:
     dependency: transitive
     description:
@@ -33,14 +41,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
-  change_app_package_name:
-    dependency: "direct main"
-    description:
-      name: change_app_package_name
-      sha256: f9ebaf68a4b5a68c581492579bb68273c523ef325fbf9ce2f1b57fb136ad023b
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.0"
   characters:
     dependency: transitive
     description:
@@ -85,26 +85,26 @@ packages:
     dependency: transitive
     description:
       name: convert
-      sha256: "0f08b14755d163f6e2134cb58222dd25ea2a2ee8a195e53983d57c075324d592"
+      sha256: "3fa83bc417e26f1d55814443a603747d48e3cdf55b2f4fea27dea8e9224dcefd"
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.1"
+    version: "2.1.1"
   crypto:
     dependency: transitive
     description:
       name: crypto
-      sha256: ff625774173754681d66daaf4a448684fb04b78f902da9cb3d308c19cc5e8bab
+      sha256: "3ce628f3c6a7144be6c524dbb20ca5af52fa59c850c587bf5e52cd70ece8e7e8"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.3"
-  cupertino_icons:
+    version: "2.1.5"
+  dio:
     dependency: "direct main"
     description:
-      name: cupertino_icons
-      sha256: e35129dc44c9118cee2a5603506d823bab99c68393879edb440e0090d07586be
+      name: dio
+      sha256: "11979099d9ea182d74b6734340704d628b99c7a8316f9edd7718a297d1bcdd27"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.5"
+    version: "3.0.10"
   fake_async:
     dependency: transitive
     description:
@@ -134,6 +134,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_launcher_icons:
+    dependency: "direct main"
+    description:
+      name: flutter_launcher_icons
+      sha256: "75fa1d3d2b0ca6a04bbaa66ba2779f208747a995c42cbf500e42f120c9217c5f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.8.1"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -188,10 +196,10 @@ packages:
     dependency: transitive
     description:
       name: image
-      sha256: "02bafd3b4f399bfeb10034deba9753d93b55ce41cd0c4d3d8b355626f80e5b32"
+      sha256: "3ef4d4b6eb16111f24314f6f85a8852ebb5f6f85ae51ed2bca72edc273c16734"
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.3"
+    version: "2.1.19"
   image_gallery_saver:
     dependency: "direct main"
     description:
@@ -356,10 +364,10 @@ packages:
     dependency: transitive
     description:
       name: petitparser
-      sha256: "49392a45ced973e8d94a85fdb21293fbb40ba805fc49f2965101ae748a3683b4"
+      sha256: fe07f9345bf03ff0c881d1f5494e20cc40206780ca5dea86aab8037cb49af5f2
       url: "https://pub.dev"
     source: hosted
-    version: "5.1.0"
+    version: "3.1.0"
   platform:
     dependency: transitive
     description:
@@ -376,14 +384,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.3"
-  pointycastle:
-    dependency: transitive
-    description:
-      name: pointycastle
-      sha256: "7c1e5f0d23c9016c5bbd8b1473d0d3fb3fc851b876046039509e18e0c7485f2c"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.7.3"
   process:
     dependency: transitive
     description:
@@ -537,10 +537,18 @@ packages:
     dependency: transitive
     description:
       name: xml
-      sha256: "80d494c09849dc3f899d227a78c30c5b949b985ededf884cb3f3bcd39f4b447a"
+      sha256: "4c4262c7dcf7b66fa8743cdfd37ccac03d6d50d3de4084b1a528de3107540752"
       url: "https://pub.dev"
     source: hosted
-    version: "5.4.1"
+    version: "4.5.1"
+  yaml:
+    dependency: transitive
+    description:
+      name: yaml
+      sha256: "5ec3d7ffef5a113f664e4c61c08508e23acb2d87021645468967200d684b9274"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.1"
 sdks:
-  dart: ">=2.19.0 <3.0.0"
+  dart: ">=2.18.0 <3.0.0"
   flutter: ">=1.20.0"

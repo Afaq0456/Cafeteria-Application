@@ -4,13 +4,11 @@ import 'package:freshman.cafe/utils/helper.dart';
 import 'package:freshman.cafe/widgets/customNavBar.dart';
 import 'checkoutScreen.dart';
 import 'cartScreen.dart';
+
 import '../const/severaddress.dart';
 
 class MyOrderScreen extends StatelessWidget {
   static const routeName = "/myOrderScreen";
-
-  // Create a TextEditingController for notes field
-  TextEditingController notesController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -111,53 +109,6 @@ class MyOrderScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Text(
-                "Delivery Instruction",
-                style: Helper.getTheme(context).headline5,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: notesController,
-                      decoration: InputDecoration(
-                        hintText: "Add notes here...",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                      ),
-                    ),
-                  ),
-                  TextButton.icon(
-                    onPressed: () {
-                      // Do something with the notes entered by the user.
-                      String notes = notesController.text;
-                      // You can now use the "notes" variable to store or process the user's notes.
-                    },
-                    icon: Icon(
-                      Icons.add,
-                      color: AppColor.purple,
-                    ),
-                    label: Text(
-                      "Add Notes",
-                      style: TextStyle(
-                        color: AppColor.purple,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            Divider(
-              height: 30,
-              thickness: 1.5,
-              color: AppColor.placeholder.withOpacity(0.25),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Text(
                 "Order Summary",
                 style: Helper.getTheme(context).headline5,
               ),
@@ -238,7 +189,6 @@ class MyOrderScreen extends StatelessWidget {
                           CheckoutScreen.routeName,
                           arguments: {
                             'totalAmount': totalAmount,
-                            'notesController': notesController,
                           },
                         );
                       },

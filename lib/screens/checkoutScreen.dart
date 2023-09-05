@@ -21,42 +21,47 @@ class CheckoutScreen extends StatefulWidget {
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
   final TextEditingController addressController = TextEditingController();
-  bool isAddressValid = false; // Track the validity of the address
-  Future<void> placeOrder(List<Map<String, dynamic>> data,
-      String customerAddress, String customerNote) async {
+  final TextEditingController noteController = TextEditingController();
+  bool isAddressValid = false;
+
+  Future<void> placeOrder(
+    List<Map<String, dynamic>> data,
+    String customerAddress,
+    String customerNote,
+    List<CartItem> cartItems,
+  ) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = await prefs.getString(
-        'action'); // Replace 'action' with your token key from shared preferences
+    String token = prefs.getString('action');
+
     String baseurl = BaseUrl().baseUrl;
     String apiUrl = '$baseurl/api/customer/order/create';
 
-    try {
-      var response = await http.post(
-        Uri.parse(apiUrl),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode({
-          "products": data,
-          "customer_address": customerAddress,
-          "customer_note": customerNote,
-        }),
-      );
+    var request = http.MultipartRequest('POST', Uri.parse(apiUrl));
+    request.headers['Authorization'] = 'Bearer $token';
 
-      if (response.statusCode == 200) {
-        // If the server returns a 200 OK response, parse the response data
-        var responseData = json.decode(response.body);
-        // Print the data before sending
-        print('Response Data: $responseData');
-        // Clear the cart items from SharedPreferences
-        prefs.remove('cart_items');
-      } else {
-        // If the server did not return a 200 OK response, handle the error
-        print('Failed to post data: ${response.statusCode}');
-      }
-    } catch (error) {
-      // Handle other exceptions if any
-      print('Error: $error');
+    // Add form fields
+    request.fields['customer_address'] = customerAddress;
+    request.fields['customer_note'] = customerNote;
+
+    // Add cart items as form fields
+    for (int i = 0; i < cartItems.length; i++) {
+      CartItem cartItem = cartItems[i];
+      request.fields['products[$i][product_id]'] = cartItem.productId;
+      request.fields['products[$i][name]'] = cartItem.productName;
+      request.fields['products[$i][description]'] = cartItem.productDescription;
+      request.fields['products[$i][unit_price]'] =
+          cartItem.unitPrice.toString();
+      request.fields['products[$i][quantity]'] = cartItem.quantity.toString();
+      request.fields['products[$i][image]'] = cartItem.quantity.toString();
+    }
+
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      var responseData = await response.stream.bytesToString();
+      print('Response Data: $responseData');
+      prefs.remove('cart_items');
+    } else {
+      print('Failed to post data: ${response.statusCode}');
     }
   }
 
@@ -72,8 +77,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         ),
       );
     }
-    TextEditingController notesController = args['notesController'];
+
     double totalAmount = args['totalAmount'];
+    List<CartItem> cartItems = args['cartItems'];
     double discountAmount = totalAmount * 0.05;
     double deliveryCost = 10;
     double updatedTotal = totalAmount - discountAmount + deliveryCost;
@@ -105,6 +111,26 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ),
                 SizedBox(
                   height: 20,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text("Note"),
+                ),
+                SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: SizedBox(
+                    width: Helper.getScreenWidth(context) * 0.6,
+                    child: TextFormField(
+                      controller: noteController,
+                      decoration: InputDecoration(
+                        hintText: "Enter your note...",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
                 SizedBox(height: 20),
                 Padding(
@@ -412,40 +438,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 SizedBox(
                   height: 10,
                 ),
-                PaymentCard(
-                  widget: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          SizedBox(
-                            width: 40,
-                            height: 30,
-                            child: Image.asset(
-                              Helper.getAssetName(
-                                "paypal.png",
-                                "real",
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text("afaq@email.com"),
-                        ],
-                      ),
-                      Container(
-                        width: 15,
-                        height: 15,
-                        decoration: ShapeDecoration(
-                          shape: CircleBorder(
-                            side: BorderSide(color: AppColor.purple),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
                 SizedBox(
                   height: 20,
                 ),
@@ -533,6 +525,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () async {
+                        if (!isAddressValid) {
+                          // Show error message and prevent sending order
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Address is missing.')),
+                          );
+                          return;
+                        }
+                        String customerNote = noteController
+                            .text; // Get note from the noteController
+
                         List<Map<String, dynamic>> data = [];
                         SharedPreferences prefs =
                             await SharedPreferences.getInstance();
@@ -549,18 +551,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             "name": cartItem.productName,
                             "description": cartItem.productDescription,
                             "unit_price": cartItem.unitPrice,
+                            "quantity": cartItem.quantity,
                             "image": cartItem.productImage,
-                            "quantity": cartItem.quantity
                           });
                         }
 
                         String customerAddress = addressController.text;
-                        String customerNote = notesController.text;
 
                         placeOrder(
                           data,
                           customerAddress,
                           customerNote,
+                          cartItems,
                         );
                         showModalBottomSheet(
                             shape: RoundedRectangleBorder(

@@ -334,10 +334,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       children: [
                         GestureDetector(
-                          onTap: () {
-                            Navigator.of(context)
-                                .pushNamed(IndividualItem.routeName);
-                          },
                           child: RecentItemCard(
                             image: Image.asset(
                               Helper.getAssetName("pizza3.jpg", "real"),

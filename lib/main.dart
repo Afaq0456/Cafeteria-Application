@@ -24,6 +24,7 @@ import './screens/inboxScreen.dart';
 import './screens/WalletScreen.dart';
 import './screens/myOrderScreen.dart';
 import './screens/checkoutScreen.dart';
+import 'screens/orderScreen.dart';
 import './const/colors.dart';
 
 void main() {
@@ -103,6 +104,7 @@ class MyApp extends StatelessWidget {
         PaymentScreen.routeName: (context) => PaymentScreen(),
         NotificationScreen.routeName: (context) => NotificationScreen(),
         AboutScreen.routeName: (context) => AboutScreen(),
+        OrdersScreen.routeName: (context) => OrdersScreen(),
         InboxScreen.routeName: (context) => InboxScreen(),
         WalletScreen.routeName: (context) => WalletScreen(),
         MyOrderScreen.routeName: (context) => MyOrderScreen(),

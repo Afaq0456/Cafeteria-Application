@@ -18,7 +18,6 @@ class _CartScreenState extends State<CartScreen> {
   List<CartItem> cartItems;
   double totalAmount;
 
-  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     cartItems = ModalRoute.of(context).settings.arguments as List<CartItem>;

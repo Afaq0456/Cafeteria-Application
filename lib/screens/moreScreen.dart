@@ -4,6 +4,7 @@ import 'package:freshman.cafe/screens/aboutScreen.dart';
 import 'package:freshman.cafe/screens/WalletScreen.dart';
 import 'package:freshman.cafe/screens/inboxScreen.dart';
 import 'package:freshman.cafe/screens/myOrderScreen.dart';
+import 'package:freshman.cafe/screens/orderScreen.dart';
 import 'package:freshman.cafe/screens/notificationScreen.dart';
 import 'package:freshman.cafe/screens/paymentScreen.dart';
 import 'package:freshman.cafe/utils/helper.dart';
@@ -53,10 +54,9 @@ class MoreScreen extends StatelessWidget {
                       image: Image.asset(
                         Helper.getAssetName("shopping_bag.png", "virtual"),
                       ),
-                      name: "My Orders",
+                      name: "View Order",
                       handler: () {
-                        Navigator.of(context)
-                            .pushNamed(MyOrderScreen.routeName);
+                        Navigator.of(context).pushNamed(OrdersScreen.routeName);
                       },
                     ),
                     SizedBox(height: 10),

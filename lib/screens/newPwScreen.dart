@@ -16,7 +16,7 @@ class NewPwScreen extends StatelessWidget {
   final TextEditingController oldpass1 = TextEditingController();
   final TextEditingController newpass2 = TextEditingController();
 
-  Future<void> changePassword(newPassword, oldPassword) async {
+  Future<void> changePassword(String newPassword, String oldPassword) async {
     // Get the bearer token from shared preferences
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = await prefs.getString(
@@ -25,8 +25,9 @@ class NewPwScreen extends StatelessWidget {
     String apiUrl = '$baseurl/api/customer/change/password';
 
     // Add the query parameters to the URL
-
     String url = '$apiUrl?new_password=$newPassword&old_password=$oldPassword';
+
+    print('Debug: URL: $url'); // Log the constructed URL
 
     try {
       var response = await http.get(
@@ -39,10 +40,13 @@ class NewPwScreen extends StatelessWidget {
       if (response.statusCode == 200) {
         // If the server returns a 200 OK response, parse the data
         var data = json.decode(response.body);
+
+        print('Debug: Response Data: $data'); // Log the response data
+
         return data;
       } else {
         // If the server did not return a 200 OK response, handle the error
-        print('Failed to load data: ${response.statusCode}');
+        print('Debug: Failed to load data: ${response.statusCode}');
       }
     } catch (error) {
       // Handle other exceptions if any
@@ -130,7 +134,7 @@ class NewPwScreen extends StatelessWidget {
                     controller: newpass2,
                     decoration: InputDecoration(
                       border: InputBorder.none,
-                      hintText: "Comfirm New Password",
+                      hintText: "Confirm New Password",
                       hintStyle: TextStyle(
                         color: AppColor.placeholder,
                       ),
@@ -147,9 +151,8 @@ class NewPwScreen extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () async {
                       if (newpass.text == newpass2.text &&
-                          newpass.text.isNotEmpty &&
-                          newpass2.text.isNotEmpty) {
-                        await changePassword(newpass, oldpass1);
+                          newpass.text.isNotEmpty) {
+                        await changePassword(newpass.text, oldpass1.text);
                         Navigator.of(context)
                             .pushReplacementNamed(LoginScreen.routeName);
                       } else {
