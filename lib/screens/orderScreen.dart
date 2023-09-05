@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import '../const/colors.dart';
 import '../utils/helper.dart';
 import '../const/severaddress.dart';
+import 'vieworder.dart';
 
 class OrdersScreen extends StatefulWidget {
   static const routeName = "/ordersScreen";
@@ -88,39 +89,31 @@ class _OrdersScreenState extends State<OrdersScreen> {
               itemBuilder: (context, index) {
                 final order = orders[index];
 
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0,
-                    vertical: 10.0,
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.purple, // Purple shadow color
-                          blurRadius: 10.0, // Adjust the blur radius
-                          offset: Offset(0, 2), // Adjust the offset
-                        ),
-                      ],
+                return GestureDetector(
+                  onTap: () {
+                    // Navigate to the ViewMyOrderScreen and pass order ID
+                    Navigator.pushNamed(
+                      context,
+                      ViewMyOrderScreen.routeName,
+                      arguments:
+                          order.id, // Pass the order ID to the next screen
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0,
+                      vertical: 10.0,
                     ),
                     child: Card(
+                      elevation: 5.0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15.0),
                       ),
-                      elevation:
-                          0, // Set elevation to 0 to remove default shadow
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              "Customer: ${order.customerName}",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
                             SizedBox(height: 10),
                             for (var item in order.orderItems)
                               Column(
