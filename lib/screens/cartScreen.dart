@@ -56,19 +56,26 @@ class _CartScreenState extends State<CartScreen> {
     // print("${cartItems}");
     return Scaffold(
       appBar: AppBar(
-        title: Text("Cart"),
         leading: IconButton(
           onPressed: () {
             Navigator.of(context).pop();
           },
-          icon: Icon(Icons.arrow_back_ios_rounded),
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Colors.black,
+          ),
+        ),
+        title: Text(
+          "Cart",
+          style: Helper.getTheme(context).headline5,
         ),
         actions: [
           Image.asset(
             Helper.getAssetName("cart.png", "virtual"),
           ),
         ],
-        backgroundColor: AppColor.purple,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: cartItems == null || cartItems.isEmpty
           ? Center(
@@ -78,6 +85,7 @@ class _CartScreenState extends State<CartScreen> {
               itemCount: cartItems.length,
               itemBuilder: (context, index) {
                 CartItem cartItem = cartItems[index];
+
                 return GestureDetector(
                   onTap: () {
                     Navigator.pushNamed(
@@ -98,11 +106,13 @@ class _CartScreenState extends State<CartScreen> {
                         children: [
                           Expanded(
                             flex: 2,
-                            child: Image.network(
-                              ("$baseurl/${cartItem.productImage}"),
-                              height: 80,
-                              width: 80,
-                              fit: BoxFit.contain,
+                            child: ClipOval(
+                              child: Image.network(
+                                ("$baseurl/${cartItem.productImage}"),
+                                height: 80,
+                                width: 80,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                           Expanded(
@@ -119,7 +129,8 @@ class _CartScreenState extends State<CartScreen> {
                                 ),
                                 SizedBox(height: 4),
                                 Text(
-                                  cartItem.productDescription,
+                                  cartItem
+                                      .productDescription, // Add description here
                                   style: TextStyle(color: AppColor.placeholder),
                                 ),
                                 SizedBox(height: 8),
@@ -138,8 +149,9 @@ class _CartScreenState extends State<CartScreen> {
                                   children: [
                                     ElevatedButton(
                                       style: ButtonStyle(
-                                          elevation:
-                                              MaterialStateProperty.all(5.0)),
+                                        elevation:
+                                            MaterialStateProperty.all(5.0),
+                                      ),
                                       onPressed: () {
                                         if (cartItem.quantity > 1) {
                                           setState(() {
@@ -157,8 +169,9 @@ class _CartScreenState extends State<CartScreen> {
                                     ),
                                     ElevatedButton(
                                       style: ButtonStyle(
-                                          elevation:
-                                              MaterialStateProperty.all(5.0)),
+                                        elevation:
+                                            MaterialStateProperty.all(5.0),
+                                      ),
                                       onPressed: () {
                                         setState(() {
                                           cartItem.quantity++;
@@ -220,7 +233,10 @@ class _CartScreenState extends State<CartScreen> {
                                 ),
                               );
                             },
-                            icon: Icon(Icons.delete),
+                            icon: Icon(
+                              Icons.delete,
+                              color: AppColor.purple,
+                            ),
                           ),
                         ],
                       ),

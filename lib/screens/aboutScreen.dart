@@ -2,60 +2,61 @@ import 'package:flutter/material.dart';
 import 'package:freshman.cafe/const/colors.dart';
 import 'package:freshman.cafe/utils/helper.dart';
 import 'package:freshman.cafe/widgets/customNavBar.dart';
-import 'dart:convert';
-import 'package:freshman.cafe/const/severaddress.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AboutScreen extends StatefulWidget {
   static const routeName = "/aboutScreen";
 
-  const AboutScreen({Key key}) : super(key: key);
-
   @override
-  State<AboutScreen> createState() => _AboutScreenState();
+  _AboutScreenState createState() => _AboutScreenState();
 }
 
 class _AboutScreenState extends State<AboutScreen> {
-  Map<String, dynamic> about = {};
-  Future<void> About() async {
-    // Get the bearer token from shared preferences
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString('action');
-    String baseurl = BaseUrl().baseUrl;
+  final PageController _pageController =
+      PageController(initialPage: 0, viewportFraction: 0.75);
+  int _currentPageIndex = 0;
 
-    String apiUrl = '$baseurl/api/about_us';
-
-    try {
-      var response = await http.get(
-        Uri.parse(apiUrl),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        // If the server returns a 200 OK response, parse the response data
-        final responseData = json.decode(response.body);
-        setState(() {
-          about = responseData;
-        });
-      } else {
-        // If the server did not return a 200 OK response, handle the error
-        print('Failed to fetch data: ${response.statusCode}');
-        return null;
-      }
-    } catch (error) {
-      // Handle other exceptions if any
-      print('Error: $error');
-      return null;
-    }
-  }
+  // Sample data for team members
+  final List<TeamMember> teamMembers = [
+    TeamMember(
+      image: Helper.getAssetName("user1.jpg", "real"),
+      name: 'Afaq Ahmad',
+      contactNumber: '+92126246153',
+      degree: 'Bachelor of Software Engineering',
+      university: 'Minhaj University',
+    ),
+    TeamMember(
+      image: Helper.getAssetName("user3.jpeg", "real"),
+      name: 'Unzila Mughal',
+      contactNumber: '+92356158888',
+      degree: 'Bachelor of Software Engineering',
+      university: 'Minhaj University',
+    ),
+    TeamMember(
+      image: Helper.getAssetName("user4.png", "real"),
+      name: 'Mr. Saif Ali',
+      contactNumber: '+923465724512',
+      degree: 'Lecturer, Department of Software Engineering',
+      university: 'Minhaj University',
+    ),
+  ];
 
   @override
   void initState() {
-    About();
     super.initState();
+    // Start the auto-slider
+    _startAutoSlider();
+  }
+
+  void _startAutoSlider() {
+    Future.delayed(Duration(seconds: 3), () {
+      if (_currentPageIndex < teamMembers.length - 1) {
+        _pageController.animateToPage(_currentPageIndex + 1,
+            duration: Duration(milliseconds: 4000), curve: Curves.ease);
+      } else {
+        _pageController.animateToPage(0,
+            duration: Duration(milliseconds: 4000), curve: Curves.ease);
+      }
+    });
   }
 
   @override
@@ -67,6 +68,7 @@ class _AboutScreenState extends State<AboutScreen> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
@@ -89,42 +91,149 @@ class _AboutScreenState extends State<AboutScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(
-                    height: 50,
-                  ),
-                  SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        Text(
-                          about.isEmpty
-                              ? ""
-                              : about["Data"]["about_us"].toString(),
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
+                  Card(
+                    elevation: 5, // You can adjust the elevation as needed
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                          15), // You can adjust the border radius as needed
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(
+                          16.0), // You can adjust the padding as needed
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 20,
                           ),
-                        )
-                        // AboutCard(
-                        //   image: AssetImage('assets/virtual/user1.png'),
-                        //   name: 'Afaq Ahmad ',
-                        //   contactNumber: '+92126246153',
-                        //   degree: 'Bachelor of Softwear Engineeering',
-                        //   university: 'Minhaj University',
-                        // ),
-                        // SizedBox(
-                        //   height: 20,
-                        // ),
-                        // AboutCard(
-                        //   image: AssetImage('assets/virtual/avatar2.png'),
-                        //   name: 'Unzila Mughal',
-                        //   contactNumber: '+92356158888',
-                        //   degree: 'Bachelor of Softwear Engineeering',
-                        //   university: 'Minhaj University',
-                        // ),
-                        // SizedBox(
-                        //   height: 20,
-                        // ),
-                      ],
+                          Text(
+                            "Welcome to Freshman Cafe!",
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: AppColor.purple),
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Text(
+                            "Freshman Cafe is a vibrant culinary destination, offering a delightful fusion of flavors and a warm ambiance. Explore a world of taste in a welcoming atmosphere.",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: AppColor.secondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    "Our Team",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColor.purple,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  SizedBox(
+                    height: 260,
+                    child: PageView.builder(
+                      controller: _pageController,
+                      itemCount: teamMembers.length,
+                      itemBuilder: (context, index) {
+                        final member = teamMembers[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 20),
+                          child: AboutCard(
+                            image: AssetImage(member.image),
+                            name: member.name,
+                            contactNumber: member.contactNumber,
+                            degree: member.degree,
+                            university: member.university,
+                          ),
+                        );
+                      },
+                      onPageChanged: (index) {
+                        setState(() {
+                          _currentPageIndex = index;
+                        });
+                        _startAutoSlider();
+                      },
+                    ),
+                  ),
+
+                  // Add the "Contact Us" card with Flutter default icons
+                  Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Contact Us",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: AppColor.purple,
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            "Minhaj University Johar Town Lahore Punjab, Pakistan!",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: AppColor.secondary,
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            "Email: freshmancafe@mul.edu.pk",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                            ),
+                          ),
+                          Text(
+                            "Phone: +(042) 346 28281",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(right: 10.0),
+                                child: Icon(
+                                  Icons.facebook,
+                                  size: 30,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 90.0),
+                                child: Icon(
+                                  Icons.call,
+                                  size: 24,
+                                  color: Colors.green,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -163,46 +272,44 @@ class AboutCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
+      width: 200,
       decoration: BoxDecoration(
-        color: AppColor.purple,
+        color: AppColor.purple
+            .withOpacity(0.8), // Use a semi-transparent color here
         borderRadius: BorderRadius.circular(10),
       ),
       padding: EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 30,
-                backgroundImage: image,
+          ClipOval(
+            child: Container(
+              height: 80,
+              width: 80,
+              child: Image(
+                image: image,
+                fit: BoxFit.cover,
               ),
-              SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(height: 5),
-                  Text(
-                    contactNumber,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
           SizedBox(height: 10),
+          Text(
+            name,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          SizedBox(height: 5),
+          Text(
+            contactNumber,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.white,
+            ),
+          ),
+          SizedBox(height: 50),
           Text(
             degree,
             style: TextStyle(
@@ -223,4 +330,20 @@ class AboutCard extends StatelessWidget {
       ),
     );
   }
+}
+
+class TeamMember {
+  final String image;
+  final String name;
+  final String contactNumber;
+  final String degree;
+  final String university;
+
+  TeamMember({
+    @required this.image,
+    @required this.name,
+    @required this.contactNumber,
+    @required this.degree,
+    @required this.university,
+  });
 }

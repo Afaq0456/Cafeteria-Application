@@ -4,143 +4,114 @@ import 'package:freshman.cafe/utils/helper.dart';
 import 'package:freshman.cafe/widgets/customNavBar.dart';
 
 class InboxScreen extends StatelessWidget {
-  static const routeName = "/inboxScreen";
-
-  final List<InboxMessage> inboxMessages = [
-    InboxMessage(
-      sender: "Unzila Mughal",
-      subject: "Regarding your order",
-      message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    ),
-    InboxMessage(
-      sender: "Unzila Mughal",
-      subject: "Important announcement",
-      message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    ),
-    InboxMessage(
-      sender: "Unzila Mughal",
-      subject: "Meeting Reminder",
-      message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    ),
-  ];
+  static const routeName = "/faqsScreen";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          SafeArea(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        icon: Icon(Icons.arrow_back_ios_rounded),
-                      ),
-                      Expanded(
-                        child: Text(
-                          "Inbox",
-                          style: Helper.getTheme(context).headline5,
-                        ),
-                      ),
-                      Image.asset(
-                        Helper.getAssetName("cart.png", "virtual"),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: inboxMessages.length,
-                    itemBuilder: (context, index) {
-                      final message = inboxMessages[index];
-                      return InboxMessageCard(
-                        sender: message.sender,
-                        subject: message.subject,
-                        message: message.message,
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Colors.black,
           ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            child: CustomNavBar(
-              menu: true,
-            ),
+        ),
+        title: Text(
+          "FAQs",
+          style: Helper.getTheme(context).headline5,
+        ),
+        actions: [
+          Image.asset(
+            Helper.getAssetName("cart.png", "virtual"),
           ),
         ],
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            FaqCard(
+              icon: Icons.question_answer,
+              question: "What is Freshman Cafe?",
+              answer:
+                  "Freshman Cafe is a mobile app that allows you to order food and drinks from your favorite cafes and restaurants.",
+            ),
+            Divider(),
+            FaqCard(
+              icon: Icons.info,
+              question: "How do I place an order?",
+              answer:
+                  "To place an order, simply select the items you want, add them to your cart, and proceed to checkout. You can then choose your preferred payment method and confirm your order.",
+            ),
+            Divider(),
+            FaqCard(
+              icon: Icons.track_changes,
+              question: "Can I track my order?",
+              answer: "This feature is comming soon.",
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: CustomNavBar(
+        menu: true,
       ),
     );
   }
 }
 
-class InboxMessage {
-  final String sender;
-  final String subject;
-  final String message;
+class FaqCard extends StatelessWidget {
+  final IconData icon;
+  final String question;
+  final String answer;
 
-  InboxMessage({
-    @required this.sender,
-    @required this.subject,
-    @required this.message,
-  });
-}
-
-class InboxMessageCard extends StatelessWidget {
-  final String sender;
-  final String subject;
-  final String message;
-
-  const InboxMessageCard({
+  const FaqCard({
     Key key,
-    @required this.sender,
-    @required this.subject,
-    @required this.message,
+    @required this.icon,
+    @required this.question,
+    @required this.answer,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: AppColor.purple, // Set the card color to purple
-      elevation: 0,
-      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      color: Colors.white,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              sender,
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              children: [
+                Icon(
+                  icon,
+                  color: AppColor.purple,
+                ),
+                SizedBox(width: 8),
+                Text(
+                  question,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: 8),
             Text(
-              subject,
+              answer,
               style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: AppColor.primary,
               ),
             ),
-            SizedBox(height: 8),
-            Text(
-              message,
-              style: TextStyle(color: Colors.white),
-            ),
+            SizedBox(height: 16),
           ],
         ),
       ),

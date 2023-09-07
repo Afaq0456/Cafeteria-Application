@@ -30,10 +30,26 @@ class MyOrderScreen extends StatelessWidget {
     String baseurl = BaseUrl().baseUrl;
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "My Order",
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Colors.black,
+          ),
         ),
-        backgroundColor: AppColor.purple,
+        title: Text(
+          "Order Details",
+          style: Helper.getTheme(context).headline5,
+        ),
+        actions: [
+          Image.asset(
+            Helper.getAssetName("cart.png", "virtual"),
+          ),
+        ],
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: SingleChildScrollView(
         child: Column(

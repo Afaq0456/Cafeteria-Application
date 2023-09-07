@@ -1,10 +1,6 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:freshman.cafe/const/colors.dart';
 import 'package:freshman.cafe/const/severaddress.dart';
 import 'package:freshman.cafe/screens/homeScreen.dart';
@@ -26,7 +22,7 @@ class _searchPageState extends State<searchPage> {
     setState(() {
       productsData = {};
     });
-    // Get the bearer token from shared preferences
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('action');
     String baseurl = BaseUrl().baseUrl;
@@ -35,33 +31,28 @@ class _searchPageState extends State<searchPage> {
       var response = await http.get(
         Uri.parse('$baseurl/api/customer/get/products'),
         headers: {
-          'Authorization':
-              'Bearer $token', // Add the bearer token to the headers
+          'Authorization': 'Bearer $token',
         },
       );
 
       if (response.statusCode == 200) {
-        // If the server returns a 200 OK response, parse the data
         var data = json.decode(response.body);
         setState(() {
           productsData = data;
         });
       } else {
-        // If the server did not return a 200 OK response, handle the error
         print('Failed to load data: ${response.statusCode}');
       }
     } catch (error) {
-      // Handle other exceptions if any
       print('Error: $error');
     }
   }
 
-  //search data
   Future<void> search_Data(name) async {
     setState(() {
       productsData = {};
     });
-    // Get the bearer token from shared preferences
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('action');
     String baseurl = BaseUrl().baseUrl;
@@ -70,23 +61,19 @@ class _searchPageState extends State<searchPage> {
       var response = await http.get(
         Uri.parse('$baseurl/api/customer/get/products?name=$name'),
         headers: {
-          'Authorization':
-              'Bearer $token', // Add the bearer token to the headers
+          'Authorization': 'Bearer $token',
         },
       );
 
       if (response.statusCode == 200) {
-        // If the server returns a 200 OK response, parse the data
         var data = json.decode(response.body);
         setState(() {
           productsData = data;
         });
       } else {
-        // If the server did not return a 200 OK response, handle the error
         print('Failed to load data: ${response.statusCode}');
       }
     } catch (error) {
-      // Handle other exceptions if any
       print('Error: $error');
     }
   }
@@ -100,8 +87,28 @@ class _searchPageState extends State<searchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:
-          AppBar(title: Text("Search Page"), backgroundColor: AppColor.purple),
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Colors.black,
+          ),
+        ),
+        title: Text(
+          "Search",
+          style: Helper.getTheme(context).headline5,
+        ),
+        actions: [
+          Image.asset(
+            Helper.getAssetName("cart.png", "virtual"),
+          ),
+        ],
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -119,10 +126,6 @@ class _searchPageState extends State<searchPage> {
                     color: AppColor.placeholderBg,
                   ),
                   child: TextField(
-                    // onTap: () {
-                    //   Navigator.of(context).push(MaterialPageRoute(
-                    //       builder: (context) => searchPage()));
-                    // },
                     onSubmitted: ((value) async {
                       await search_Data(value);
                     }),
@@ -157,7 +160,6 @@ class _searchPageState extends State<searchPage> {
                     padding: const EdgeInsets.all(8.0),
                     child: RestaurantCard(
                       image: Image.network(
-                        // Helper.getAssetName("pizza2.jpg", "real"),
                         BaseUrl().baseUrl +
                             "/" +
                             productsData["data"][index]['image'].toString(),

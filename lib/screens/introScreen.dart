@@ -15,16 +15,16 @@ class _IntroScreenState extends State<IntroScreen> {
   int count;
   final List<Map<String, String>> _pages = [
     {
-      "image": "vector0.png",
+      "image": "vector0.jpg",
       "title": "Find Food You Love",
       "desc": "People who love to eat are always the best people."
     },
     {
-      "image": "vector8.png",
+      "image": "vector8.jpg",
       "title": "Fast Delivery",
       "desc": "Fast food delivery to your office or wherever you are"
     },
-    {"image": "vector9.png", "title": "Deals", "desc": "Best Deals Ever"},
+    {"image": "vector9.jpg", "title": "Deals", "desc": "Best Deals Ever"},
   ];
 
   @override

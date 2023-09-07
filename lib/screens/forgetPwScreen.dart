@@ -26,11 +26,11 @@ class ForgetPwScreen extends StatelessWidget {
                 ),
                 Spacer(),
                 Text(
-                  "Please enter your Phone Number to recieve a link to create a new password via email",
+                  "Please enter your email to recieve a link to create a new password via email",
                   textAlign: TextAlign.center,
                 ),
                 Spacer(flex: 2),
-                CustomTextInput(hintText: "Phone"),
+                CustomTextInput(hintText: "email"),
                 Spacer(),
                 SizedBox(
                   width: double.infinity,

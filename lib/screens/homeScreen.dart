@@ -85,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "Hi Saif!",
+                          "Home",
                           style: Helper.getTheme(context).headline5,
                         ),
                         Image.asset(Helper.getAssetName("cart.png", "virtual"))
@@ -112,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           value: "current location",
                           items: [
                             DropdownMenuItem(
-                              child: Text("Current Location"),
+                              child: Text("Minhaj University"),
                               value: "current location",
                             ),
                           ],

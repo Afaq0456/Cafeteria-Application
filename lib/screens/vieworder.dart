@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../const/colors.dart';
+import 'package:freshman.cafe/utils/helper.dart';
+import 'package:freshman.cafe/widgets/customNavBar.dart';
 import '../const/severaddress.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,7 +14,7 @@ class ViewMyOrderScreen extends StatefulWidget {
 }
 
 class _ViewMyOrderScreenState extends State<ViewMyOrderScreen> {
-  Map<String, dynamic> orderData = {}; // Store order data here
+  Map<String, dynamic> orderData = {};
   bool isLoading = true;
 
   @override
@@ -45,8 +47,6 @@ class _ViewMyOrderScreenState extends State<ViewMyOrderScreen> {
           orderData = responseData['Data'];
           isLoading = false;
         });
-
-        print('Name: ${orderData['name']}');
       } else {
         print('Failed to load order data: ${response.statusCode}');
         setState(() {
@@ -61,133 +61,153 @@ class _ViewMyOrderScreenState extends State<ViewMyOrderScreen> {
     }
   }
 
+  Widget buildDataCard(String title, dynamic data, IconData icon) {
+    return Card(
+      elevation: 3,
+      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: ListTile(
+        leading: Icon(icon, color: AppColor.purple),
+        title: Text(
+          title,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        subtitle: Text(
+          data != null ? data.toString() : 'N/A',
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.grey,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text("View My Order"), backgroundColor: AppColor.purple),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Order Details",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              ListTile(
-                title: Text(
-                  "Name:",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                subtitle: Text(
-                  "${orderData['name'] ?? 'N/A'}",
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-              ListTile(
-                title: Text(
-                  "Price:",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                subtitle: Text(
-                  "${orderData['total'] ?? 'N/A'}",
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-              ListTile(
-                title: Text(
-                  "Quantity:",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                subtitle: Text(
-                  "${orderData['order_items']?.length ?? 'N/A'}",
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-              ListTile(
-                title: Text(
-                  "Date:",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                subtitle: Text(
-                  "${orderData['order_placed_at'] ?? 'N/A'}",
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-              ListTile(
-                title: Text(
-                  "Address:",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                subtitle: Text(
-                  "${orderData['customer_address'] ?? 'N/A'}",
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-              ListTile(
-                title: Text(
-                  "Note:",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                subtitle: Text(
-                  "${orderData['customer_note'] ?? 'N/A'}",
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-              ListTile(
-                title: Text(
-                  "Status:",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                subtitle: Text(
-                  "${orderData['order_status'] ?? 'N/A'}",
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ],
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Colors.black,
           ),
         ),
+        title: Text(
+          "View My Order",
+          style: Helper.getTheme(context).headline5,
+        ),
+        actions: [
+          Image.asset(
+            Helper.getAssetName("cart.png", "virtual"),
+          ),
+        ],
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Container(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Order Details",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    Card(
+                      elevation: 3,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            buildDataCard(
+                              "Order Status",
+                              orderData['order_status'],
+                              Icons.info_outline,
+                            ),
+                            buildDataCard(
+                              "Customer Address",
+                              orderData['customer_address'],
+                              Icons.location_on,
+                            ),
+                            buildDataCard(
+                              "Customer Note",
+                              orderData['customer_note'],
+                              Icons.note,
+                            ),
+                            buildDataCard(
+                              "Order Placed At",
+                              orderData['order_placed_at'],
+                              Icons.access_time,
+                            ),
+                            buildDataCard(
+                              "Total",
+                              orderData['total'],
+                              Icons.attach_money,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Text(
+                      "Order Items",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    if (orderData['order_items'] != null)
+                      for (var item in orderData['order_items'])
+                        Card(
+                          elevation: 3,
+                          margin:
+                              EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              buildDataCard(
+                                "Item Name",
+                                item['name'],
+                                Icons.shopping_cart,
+                              ),
+                              buildDataCard(
+                                "Quantity",
+                                item['quantity'],
+                                Icons.shopping_basket,
+                              ),
+                              buildDataCard(
+                                "Price",
+                                item['unit_price'],
+                                Icons.attach_money,
+                              ),
+                              buildDataCard(
+                                "Description",
+                                item['description'],
+                                Icons.description,
+                              ),
+                            ],
+                          ),
+                        ),
+                  ],
+                ),
+              ),
+            ),
+      bottomNavigationBar: CustomNavBar(),
     );
   }
 }

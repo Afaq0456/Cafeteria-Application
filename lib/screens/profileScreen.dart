@@ -140,6 +140,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String userName = user_name.text.trim().split(' ').first;
     return Scaffold(
       // floatingActionButton: FloatingActionButton(onPressed: () {
       //   fetchProfileData();
@@ -174,32 +175,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Container(
                               height: 80,
                               width: 80,
-                              // child: Image.asset(
-                              //   // Helper.getAssetName(
-                              //   //   "user1.jpg",
-                              //   //   "real",
-                              //   // ),
-                              //   fit: BoxFit.cover,
-                              // ),
                               child: Icon(
                                 Icons.person,
                                 size: 40,
                               ),
                             ),
-                            // Positioned(
-                            //   bottom: 0,
-                            //   child: Container(
-                            //     height: 20,
-                            //     width: 80,
-                            //     color: Colors.black.withOpacity(0.3),
-                            //     child: Image.asset(
-                            //       Helper.getAssetName(
-                            //         "camera.png",
-                            //         "virtual",
-                            //       ),
-                            //     ),
-                            //   ),
-                            // ),
                           ],
                         ),
                       ),
@@ -207,7 +187,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       isEditing
                           ? SizedBox()
                           : Text(
-                              "Hi there !",
+                              "Hi there $userName",
                               style:
                                   Helper.getTheme(context).headline4.copyWith(
                                         color: AppColor.primary,

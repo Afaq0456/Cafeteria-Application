@@ -1,220 +1,126 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:freshman.cafe/const/colors.dart';
-import 'package:freshman.cafe/const/severaddress.dart';
 import 'package:freshman.cafe/utils/helper.dart';
 import 'package:freshman.cafe/widgets/customNavBar.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
-class NotificationScreen extends StatefulWidget {
-  static const routeName = "/notiScreen";
-
-  const NotificationScreen({Key key}) : super(key: key);
-
-  @override
-  State<NotificationScreen> createState() => _NotificationScreenState();
-}
-
-class _NotificationScreenState extends State<NotificationScreen> {
-  @override
-  void initState() {
-    noti();
-    super.initState();
-  }
-
-  final List<NotificationModel> notifications = [
-    NotificationModel(
-      title: "Your order has been picked up",
-      time: "Now",
-    ),
-    NotificationModel(
-      title: "Your order has been delivered",
-      time: "1 h ago",
-      color: AppColor.placeholderBg,
-    ),
-    NotificationModel(
-      title: "Lorem ipsum dolor sit amet, consectetur",
-      time: "3 h ago",
-    ),
-    NotificationModel(
-      title: "Lorem ipsum dolor sit amet, consectetur",
-      time: "5 h ago",
-    ),
-    NotificationModel(
-      title: "Lorem ipsum dolor sit amet, consectetur",
-      time: "05 Sep 2020",
-      color: AppColor.placeholderBg,
-    ),
-    NotificationModel(
-      title: "Lorem ipsum dolor sit amet, consectetur",
-      time: "12 Aug 2020",
-      color: AppColor.placeholderBg,
-    ),
-  ];
-
-  Map<String, dynamic> notification = {};
-  Future<void> noti() async {
-    // Get the bearer token from shared preferences
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString('action');
-    String baseurl = BaseUrl().baseUrl;
-
-    String apiUrl = '$baseurl/api/customer/notifications/';
-
-    try {
-      var response = await http.get(
-        Uri.parse(apiUrl),
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        // If the server returns a 200 OK response, parse the response data
-        final responseData = json.decode(response.body);
-      } else {
-        // If the server did not return a 200 OK response, handle the error
-        print('Failed to fetch data: ${response.statusCode}');
-        return null;
-      }
-    } catch (error) {
-      // Handle other exceptions if any
-      print('Error: $error');
-      return null;
-    }
-  }
+class NotificationScreen extends StatelessWidget {
+  static const routeName = "/termsAndConditionsScreen";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          SafeArea(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        icon: Icon(
-                          Icons.arrow_back_ios_rounded,
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          "Notifications",
-                          style: Helper.getTheme(context).headline5,
-                        ),
-                      ),
-                      Image.asset(
-                        Helper.getAssetName("cart.png", "virtual"),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: notifications.length,
-                    itemBuilder: (context, index) {
-                      final notification = notifications[index];
-                      return NotiCard(
-                        title: notification.title,
-                        time: notification.time,
-                        color: AppColor.purple, // Set the card color to purple
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Colors.black,
           ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            child: CustomNavBar(
-              menu: true,
-            ),
+        ),
+        title: Text(
+          "Terms & Conditions",
+          style: Helper.getTheme(context).headline5,
+        ),
+        actions: [
+          Image.asset(
+            Helper.getAssetName("cart.png", "virtual"),
           ),
         ],
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Section 1
+            TermsAndConditionsCard(
+              icon: Icons.info_outline, // Info icon
+              title: "Welcome to Freshman Cafe!",
+              content:
+                  "Please read these Terms and Conditions carefully before using the Freshman Cafe app.",
+            ),
+            // Section 2
+            TermsAndConditionsCard(
+              icon: Icons.assignment_turned_in, // Check icon
+              title: "1. Acceptance of Terms",
+              content:
+                  "By using the Freshman Cafe app, you agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use the app.",
+            ),
+            // Section 3
+            TermsAndConditionsCard(
+              icon: Icons.business, // Business icon
+              title: "2. Use of the App",
+              content:
+                  "You may use the Freshman Cafe app solely for personal and non-commercial purposes. You shall not modify, distribute, transmit, display, perform, reproduce, publish, license, create derivative works from, transfer, or sell any information, software, products, or services obtained from this app.",
+            ),
+            // Section 4
+            TermsAndConditionsCard(
+              icon: Icons.privacy_tip, // Privacy tip icon
+              title: "3. Privacy Policy",
+              content:
+                  "Your privacy is important to us. Please review our Privacy Policy to understand how we collect, use, and disclose information about you.",
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: CustomNavBar(
+        menu: true,
       ),
     );
   }
 }
 
-class NotificationModel {
+class TermsAndConditionsCard extends StatelessWidget {
+  final IconData icon;
   final String title;
-  final String time;
-  final Color color;
+  final String content;
 
-  NotificationModel({
-    @required this.title,
-    @required this.time,
-    this.color = Colors.white,
-  });
-}
-
-class NotiCard extends StatelessWidget {
-  const NotiCard({
+  const TermsAndConditionsCard({
     Key key,
-    String time,
-    String title,
-    Color color = Colors.white,
-  })  : _time = time,
-        _title = title,
-        _color = color,
-        super(key: key);
-
-  final String _time;
-  final String _title;
-  final Color _color;
+    @required this.icon,
+    @required this.title,
+    @required this.content,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: _color,
-      elevation: 0,
+      elevation: 5,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: BorderRadius.circular(15),
       ),
-      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      color: Colors.white,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Row(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CircleAvatar(
-              backgroundColor: AppColor.purple,
-              radius: 5,
-            ),
-            SizedBox(width: 20),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _title,
-                    style: TextStyle(
-                      color: AppColor.placeholderBg,
+            Row(
+              children: [
+                Icon(
+                  icon,
+                  color: AppColor.purple,
+                ),
+                SizedBox(width: 8),
+                Text(
+                  title,
+                  style: TextStyle(
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    _time,
-                    style: TextStyle(
-                      color: AppColor.placeholderBg.withOpacity(0.7),
-                    ),
-                  ),
-                ],
+                      color: AppColor.primary),
+                ),
+              ],
+            ),
+            SizedBox(height: 8),
+            Text(
+              content,
+              style: TextStyle(
+                fontSize: 16,
+                color: AppColor.secondary,
               ),
             ),
           ],

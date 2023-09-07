@@ -3,7 +3,6 @@ import 'package:freshman.cafe/const/colors.dart';
 import 'package:freshman.cafe/screens/aboutScreen.dart';
 import 'package:freshman.cafe/screens/WalletScreen.dart';
 import 'package:freshman.cafe/screens/inboxScreen.dart';
-import 'package:freshman.cafe/screens/myOrderScreen.dart';
 import 'package:freshman.cafe/screens/orderScreen.dart';
 import 'package:freshman.cafe/screens/notificationScreen.dart';
 import 'package:freshman.cafe/screens/paymentScreen.dart';
@@ -54,7 +53,7 @@ class MoreScreen extends StatelessWidget {
                       image: Image.asset(
                         Helper.getAssetName("shopping_bag.png", "virtual"),
                       ),
-                      name: "View Order",
+                      name: "My Orders",
                       handler: () {
                         Navigator.of(context).pushNamed(OrdersScreen.routeName);
                       },
@@ -64,7 +63,7 @@ class MoreScreen extends StatelessWidget {
                       image: Image.asset(
                         Helper.getAssetName("noti.png", "virtual"),
                       ),
-                      name: "Notification",
+                      name: "Terms & Conditions",
                       isNoti: true,
                       handler: () {
                         Navigator.of(context)
@@ -76,7 +75,7 @@ class MoreScreen extends StatelessWidget {
                       image: Image.asset(
                         Helper.getAssetName("mail.png", "virtual"),
                       ),
-                      name: "Inbox",
+                      name: "FAQs",
                       handler: () {
                         Navigator.of(context).pushNamed(InboxScreen.routeName);
                       },
@@ -174,19 +173,6 @@ class MoreCard extends StatelessWidget {
                 color: AppColor.secondary,
                 size: 17,
               ),
-              if (_isNoti)
-                Container(
-                  margin: const EdgeInsets.only(left: 10),
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.red,
-                  ),
-                  child: Text(
-                    "6",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
             ],
           ),
         ),

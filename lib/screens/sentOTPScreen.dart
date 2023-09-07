@@ -56,8 +56,7 @@ class _SendOTPScreenState extends State<SendOTPScreen> {
         SnackBar(
           content: Text(data["Message"].toString()),
         ),
-      ); // Registration failed
-      // Handle the error here
+      );
     }
   }
 

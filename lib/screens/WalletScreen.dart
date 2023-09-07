@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:freshman.cafe/const/colors.dart';
@@ -69,62 +68,75 @@ class _WalletScreenState extends State<WalletScreen> {
                 SizedBox(
                   height: 30,
                 ),
-                Text(
-                  "Your Balance",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColor.primary,
-                  ),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  "$balance",
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: AppColor.primary,
-                  ),
-                ),
-                SizedBox(height: 20),
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, PaymentScreen.routeName);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      primary: AppColor.purple,
-                    ),
-                    child: Text(
-                      "+Add Balance",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.normal,
-                        color: Colors.white,
+                Card(
+                  elevation: 3,
+                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  child: Column(
+                    children: [
+                      Text(
+                        "Your Balance",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColor.primary,
+                        ),
                       ),
-                    ),
+                      SizedBox(height: 10),
+                      Text(
+                        "$balance",
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: AppColor.primary,
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushNamed(
+                                context, PaymentScreen.routeName);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: AppColor.purple,
+                          ),
+                          child: Text(
+                            "+Add Balance",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.normal,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Text(
+                        "Transaction History",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColor.primary,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                    ],
                   ),
                 ),
-                SizedBox(height: 20),
-                Text(
-                  "Transaction History",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColor.primary,
-                  ),
-                ),
-                SizedBox(height: 10),
                 Expanded(
                   child: ListView.builder(
-                    itemCount:
-                        10, // Replace with actual transaction history count
+                    itemCount: 10,
                     itemBuilder: (context, index) {
-                      return TransactionItem(
-                        amount: "PKR 100",
-                        date: "June 19, 2023",
+                      return Card(
+                        elevation: 3,
+                        margin:
+                            EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                        child: TransactionItem(
+                          amount: "PKR 100",
+                          date: "June 19, 2023",
+                        ),
                       );
                     },
                   ),
@@ -158,7 +170,10 @@ class TransactionItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(Icons.payment_rounded),
+      leading: Icon(
+        Icons.payment_rounded,
+        color: AppColor.purple,
+      ),
       title: Text(
         amount,
         style: TextStyle(

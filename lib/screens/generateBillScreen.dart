@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:open_file/open_file.dart';
 import 'cartScreen.dart';
+import 'package:freshman.cafe/utils/helper.dart';
 import 'homeScreen.dart';
 import 'package:freshman.cafe/const/colors.dart';
 
@@ -34,7 +35,7 @@ class GenerateBillScreen extends StatelessWidget {
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               pw.Container(
-                color: PdfColors.purple,
+                color: PdfColors.purpleAccent400,
                 padding: pw.EdgeInsets.all(10),
                 child: pw.Row(
                   mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -44,7 +45,7 @@ class GenerateBillScreen extends StatelessWidget {
                       style: pw.TextStyle(
                         fontSize: 24,
                         fontWeight: pw.FontWeight.bold,
-                        color: PdfColors.white, // Set the text color to white
+                        color: PdfColors.white,
                       ),
                     ),
                     pw.Text(
@@ -52,7 +53,7 @@ class GenerateBillScreen extends StatelessWidget {
                       style: pw.TextStyle(
                         fontSize: 16,
                         fontWeight: pw.FontWeight.bold,
-                        color: PdfColors.white, // Set the text color to white
+                        color: PdfColors.white,
                       ),
                     ),
                   ],
@@ -195,8 +196,26 @@ class GenerateBillScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColor.purple,
-        title: Text("Invoice"),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Colors.black,
+          ),
+        ),
+        title: Text(
+          "Invoice",
+          style: Helper.getTheme(context).headline5,
+        ),
+        actions: [
+          Image.asset(
+            Helper.getAssetName("cart.png", "virtual"),
+          ),
+        ],
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -213,36 +232,63 @@ class GenerateBillScreen extends StatelessWidget {
               ),
               SizedBox(height: 10),
               Text(
-                "Date and Time: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now())}",
+                "${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now())}",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               SizedBox(height: 20),
-              Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Product',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      Container(
-                        width: 100,
-                        child: Text('Unit Price',
-                            style: TextStyle(fontWeight: FontWeight.bold)),
+              Card(
+                elevation: 2,
+                child: Column(
+                  children: [
+                    Container(
+                      color: AppColor.purple, // Set the background color here
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              width: 100,
+                              child: Text(
+                                'Product',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              width: 100,
+                              child: Text(
+                                'Unit Price',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              width: 100,
+                              child: Text(
+                                'Quantity',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      Container(
-                        width: 100,
-                        child: Text('Quantity',
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                      ),
-                    ],
-                  ),
-                  for (CartItem item in cartItems)
-                    Column(
-                      children: [
-                        Row(
+                    ),
+                    Divider(),
+                    for (CartItem item in cartItems)
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Container(
@@ -260,62 +306,118 @@ class GenerateBillScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-                        SizedBox(
-                            height: 10), // Increase the space between products
-                      ],
-                    ),
-                ],
+                      ),
+                  ],
+                ),
               ),
               SizedBox(height: 20),
-              Text("Sub Total: PKR ${totalAmount.toStringAsFixed(2)}"),
-              Text("Discount 5%: PKR ${discountAmount.toStringAsFixed(2)}"),
-              Text("Delivery Cost: PKR ${deliveryCost.toStringAsFixed(2)}"),
-              Divider(),
-              Text(
-                "Total Amount: PKR ${updatedTotal.toStringAsFixed(2)}",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+              Card(
+                elevation: 2,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                            "Sub Total: PKR ${totalAmount.toStringAsFixed(2)}"),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                            "Discount 5%: PKR ${discountAmount.toStringAsFixed(2)}"),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                            "Delivery Cost: PKR ${deliveryCost.toStringAsFixed(2)}"),
+                      ),
+                    ),
+                    Divider(),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Total Amount: PKR ${updatedTotal.toStringAsFixed(2)}",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               SizedBox(height: 80),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Column(
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          Icons.picture_as_pdf,
-                          size: 40,
-                          color: Colors.purple,
-                        ),
-                        onPressed: generateAndDownloadPDFBill,
-                      ),
-                      Text("Download PDF"),
-                    ],
+                  _buildCircularButton(
+                    Icons.picture_as_pdf,
+                    AppColor.purple,
+                    "Download PDF",
+                    () => generateAndDownloadPDFBill(),
                   ),
-                  Column(
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          Icons.home,
-                          size: 40,
-                          color: Colors.purple,
-                        ),
-                        onPressed: () {
-                          Navigator.of(context)
-                              .pushReplacementNamed(HomeScreen.routeName);
-                        },
-                      ),
-                      Text("Back to Home"),
-                    ],
+                  _buildCircularButton(
+                    Icons.home,
+                    AppColor.purple,
+                    "Back to Home",
+                    () {
+                      Navigator.of(context).pushReplacementNamed(
+                        HomeScreen.routeName,
+                      );
+                    },
                   ),
                 ],
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildCircularButton(
+    IconData icon,
+    Color color,
+    String label,
+    VoidCallback onPressed,
+  ) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Column(
+        children: [
+          AnimatedContainer(
+            duration: Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: color,
+            ),
+            padding: EdgeInsets.all(12),
+            child: Icon(
+              icon,
+              size: 40,
+              color: Colors.white,
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
       ),
     );
   }
