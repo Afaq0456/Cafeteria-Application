@@ -28,6 +28,8 @@ This is our complete food delivery app, where I will share with you how you can 
 
 => My Orders
 
+=> View Order
+
 => Profile
 
 => Bottom Navigation Bar
@@ -36,7 +38,5 @@ This is our complete food delivery app, where I will share with you how you can 
 
 => Invoice Pdf
 
-
-Thanks for your love and support 🙏 
 
 
