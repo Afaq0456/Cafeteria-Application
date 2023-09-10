@@ -34,23 +34,19 @@ class _HomeScreenState extends State<HomeScreen> {
       var response = await http.get(
         Uri.parse('$baseurl/api/customer/get/products'),
         headers: {
-          'Authorization':
-              'Bearer $token', // Add the bearer token to the headers
+          'Authorization': 'Bearer $token',
         },
       );
 
       if (response.statusCode == 200) {
-        // If the server returns a 200 OK response, parse the data
         var data = json.decode(response.body);
         setState(() {
           productsData = data;
         });
       } else {
-        // If the server did not return a 200 OK response, handle the error
         print('Failed to load data: ${response.statusCode}');
       }
     } catch (error) {
-      // Handle other exceptions if any
       print('Error: $error');
     }
   }
